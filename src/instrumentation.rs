@@ -8,8 +8,8 @@ use swc_core::common::{Span, SyntaxContext};
 use swc_core::ecma::{
     ast::{
         ArrowExpr, AssignExpr, AssignTarget, BlockStmt, ClassDecl, ClassMethod, Constructor, Expr,
-        FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem, Param, Pat,
-        PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
+        FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem, Param, ParamOrTsParamProp, Pat, PropName,
+        Script, SimpleAssignTarget, Stmt, Str, VarDecl,
     },
     atoms::Atom,
 };
@@ -129,18 +129,39 @@ impl Instrumentation {
         ];
     }
 
-    fn insert_constructor_tracing(&mut self, body: &mut BlockStmt) {
+    fn insert_constructor_tracing(&mut self, body: &mut BlockStmt, params: Vec<ParamOrTsParamProp>) {
         self.count += 1;
 
         let original_stmts = std::mem::take(&mut body.stmts);
+
+        // Create a new BlockStmt with the original statements
+        let original_body = BlockStmt {
+            span: body.span,
+            stmts: original_stmts,
+            ..body.clone()
+        };
+
+        let original_params: Vec<Pat> = params
+            .into_iter()
+            .filter(|p| p.is_param())
+            .map(|p| p.as_param().unwrap().pat.clone())
+            .collect();
+
+        let wrapped_fn = self.new_fn(original_body, original_params);
 
         let ch_ident = ident!(format!("tr_ch_apm${}", &self.config.channel_name));
         let ctx_ident = ident!(format!("tr_ch_apm_ctx${}", &self.config.channel_name));
         let mut try_catch = quote!(
             "try {
+                const __apm$original_args = arguments;
+
                 if ($ch.hasSubscribers) {
                     $ch.start.publish($ctx);
                 }
+
+                const __apm$wrapped = $wrapped;
+
+                return __apm$wrapped.apply(null, __apm$original_args);
             } catch (tr_ch_err) { 
                 if ($ch.hasSubscribers) {
                     $ctx.error = tr_ch_err;
@@ -159,12 +180,13 @@ impl Instrumentation {
                     $ch.end.publish($ctx);
                 }
             }" as Stmt,
+            wrapped: Expr = wrapped_fn.into()
             ch = ch_ident,
             ctx = ctx_ident.clone(),
         );
         if let Some(try_catch_stmt) = try_catch.as_mut_try_stmt() {
             for stmt in &original_stmts {
-                try_catch_stmt.block.stmts.push(stmt.clone());
+                try_catch_stmt.block.stmts.push(stmt.clone()); // this needs updating too no ?
             }
         }
 
@@ -280,7 +302,7 @@ impl Instrumentation {
 
         if self.count == self.config.function_query.index() && node.body.is_some() {
             if let Some(body) = node.body.as_mut() {
-                self.insert_constructor_tracing(body);
+                self.insert_constructor_tracing(body, node.params.clone());
             }
         } else {
             self.count += 1;
