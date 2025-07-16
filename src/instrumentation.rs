@@ -81,7 +81,7 @@ impl Instrumentation {
         define_channel
     }
 
-    fn insert_tracing(&mut self, body: &mut BlockStmt, params: Vec<Param>) {
+    fn insert_tracing(&mut self, body: &mut BlockStmt, params: &[Param]) {
         self.count += 1;
 
         let original_stmts = std::mem::take(&mut body.stmts);
@@ -93,7 +93,7 @@ impl Instrumentation {
             ..body.clone()
         };
 
-        let original_params: Vec<Pat> = params.into_iter().map(|p| p.pat).collect();
+        let original_params: Vec<Pat> = params.into_iter().map(|p| p.pat.clone()).collect();
 
         let wrapped_fn = self.new_fn(original_body, original_params);
 
@@ -182,7 +182,7 @@ impl Instrumentation {
             && func_expr.function.body.is_some()
         {
             if let Some(body) = func_expr.function.body.as_mut() {
-                self.insert_tracing(body, func_expr.function.params.clone());
+                self.insert_tracing(body, &func_expr.function.params);
             }
             true
         } else {
@@ -220,7 +220,7 @@ impl Instrumentation {
             && node.function.body.is_some()
         {
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, node.function.params.clone());
+                self.insert_tracing(body, &node.function.params);
             }
         }
         false
@@ -267,7 +267,7 @@ impl Instrumentation {
             && node.function.body.is_some()
         {
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, node.function.params.clone());
+                self.insert_tracing(body, &node.function.params);
             }
         }
         true
@@ -300,7 +300,7 @@ impl Instrumentation {
             && node.function.body.is_some()
         {
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, node.function.params.clone());
+                self.insert_tracing(body, &node.function.params);
             }
         }
         false
