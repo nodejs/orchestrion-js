@@ -93,7 +93,7 @@ impl Instrumentation {
             ..body.clone()
         };
 
-        let original_params: Vec<Pat> = params.into_iter().map(|p| p.pat.clone()).collect();
+        let original_params: Vec<Pat> = params.iter().map(|p| p.pat.clone()).collect();
 
         let wrapped_fn = self.new_fn(original_body, original_params);
 
