@@ -17,7 +17,7 @@ nodejs-semver = { version = "4", features = ["serde"] }
 swc = "33"
 swc_core = { version = "34", features = ["ecma_plugin_transform","ecma_quote"] }
 swc_ecma_parser = "22"
-swc_ecma_visit = { version = "8", features = ["path"] }
+swc_ecma_visit = { version = "14", features = ["path"] }
 
 # serde feature
 serde = { version = "1", features = ["derive"], optional = true }
