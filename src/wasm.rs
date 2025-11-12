@@ -1,6 +1,6 @@
 use crate::{Config, InstrumentationConfig, InstrumentationVisitor, Instrumentor, TransformOutput};
 use std::path::PathBuf;
-use swc::config::IsModule;
+use swc_config::is_module::IsModule;
 use wasm_bindgen::prelude::*;
 
 #[cfg_attr(

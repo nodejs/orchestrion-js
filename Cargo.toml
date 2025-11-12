@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 rust-version = "1.84.1"
 license = "Apache-2.0"
+resolver = "2"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -13,11 +14,19 @@ serde = ["serde/derive"]
 wasm = ['serde', "wasm-bindgen", "tsify", "getrandom"]
 
 [dependencies]
-nodejs-semver = { version = "4", features = ["serde"] }
-swc = "33"
-swc_core = { version = "34", features = ["ecma_plugin_transform","ecma_quote"] }
-swc_ecma_parser = "22"
-swc_ecma_visit = { version = "8", features = ["path"] }
+nodejs-semver = { version = "4", features = ["serde"], default-features = false }
+swc_ecma_parser = { version = "27", default-features = false }
+swc_compiler_base = { version = "39", default-features = false }
+swc_config = { version = "3", default-features = false }
+swc_error_reporters = { version = "19", default-features = false }
+swc_node_comments = { version = "17", default-features = false }
+swc_ecma_codegen = { version = "20.0.0", default-features = false }
+swc_atoms = { version = "9.0.0", default-features = false }
+swc_sourcemap = { version = "9.3.4", default-features = false }
+swc_ecma_quote = { version = "27", default-features = false }
+swc_ecma_ast = { version = "18.0.0", default-features = false }
+swc_ecma_visit = { version = "18.0.1", default-features = false }
+swc_common = { version = "17.0.1", default-features = false }
 
 # serde feature
 serde = { version = "1", features = ["derive"], optional = true }
@@ -27,6 +36,9 @@ wasm-bindgen = { version = "0.2", optional = true }
 tsify = { version='0.5', features = ["js"], optional = true}
 # we need this to enable the js feature
 getrandom = { version = "*", features = ["wasm_js"], optional = true }
+anyhow = "1.0.100"
+
+
 
 [dev-dependencies]
 assert_cmd = "2"
@@ -34,3 +46,16 @@ assert_cmd = "2"
 [profile.release]
 lto = true
 opt-level = "s"
+panic = "abort"
+codegen-units = 1
+
+[patch.crates-io]
+swc_compiler_base = { path = "./overrides/swc_compiler_base" }
+regex = { path = "./overrides/regex" }
+
+[package.metadata.wasm-pack.profile.release.wasm-bindgen]
+debug-js-glue = false
+demangle-name-section = false
+dwarf-debug-info = false
+omit-default-module-path = true
+wasm-opt = ["-Oz"]

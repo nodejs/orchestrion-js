@@ -19,23 +19,22 @@
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
 use std::{error::Error, path::PathBuf, sync::Arc};
-use swc::{
-    config::{IsModule, SourceMapsConfig},
-    sourcemap::SourceMap,
-    try_with_handler, Compiler, HandlerOpts, PrintArgs,
+
+use swc_compiler_base::PrintArgs;
+use swc_compiler_base::SourceMapsConfig;
+use swc_config::is_module::IsModule;
+use swc_error_reporters::handler::{try_with_handler, HandlerOpts};
+use swc_node_comments::SwcComments;
+use swc_common::{comments::Comments, errors::{ColorConfig, Handler}, FileName, SourceFile};
+use swc_ecma_ast::{
+    AssignExpr, ClassDecl, ClassExpr, ClassMethod, Constructor, EsVersion, FnDecl,
+    MethodProp, Module, Script, Str, VarDecl, Program
 };
-use swc_core::{
-    common::{comments::Comments, errors::ColorConfig, FileName, FilePathMapping},
-    ecma::{
-        ast::{
-            AssignExpr, ClassDecl, ClassExpr, ClassMethod, Constructor, EsVersion, FnDecl,
-            MethodProp, Module, Script, Str, VarDecl,
-        },
-        visit::{VisitMut, VisitMutWith},
-    },
-    quote,
-};
+use swc_ecma_visit::{VisitMut, VisitMutWith, VisitWith};
 use swc_ecma_parser::{EsSyntax, Syntax};
+use swc_ecma_codegen::Node;
+use swc_sourcemap::SourceMap;
+use swc_ecma_quote::quote;
 
 mod error;
 
@@ -49,6 +48,60 @@ mod function_query;
 pub use function_query::*;
 
 use crate::error::OrchestrionError;
+
+struct Compiler {
+    /// CodeMap
+    pub cm: Arc<swc_common::SourceMap>,
+    comments: SwcComments,
+}
+
+impl Compiler {
+
+    fn new(cm: Arc<swc_common::SourceMap>) -> Self {
+        Compiler {
+            cm,
+            comments: Default::default(),
+        }
+    }
+
+    pub fn comments(&self) -> &SwcComments {
+        &self.comments
+    }
+
+    /// This method parses a javascript / typescript file
+    pub fn parse_js(
+        &self,
+        fm: Arc<SourceFile>,
+        handler: &Handler,
+        target: EsVersion,
+        syntax: Syntax,
+        is_module: IsModule,
+        comments: Option<&dyn Comments>,
+    ) -> Result<Program, anyhow::Error> {
+        swc_compiler_base::parse_js(
+            self.cm.clone(),
+            fm,
+            handler,
+            target,
+            syntax,
+            is_module,
+            comments,
+        )
+    }
+
+    /// Converts ast node to source string and sourcemap.
+    ///
+    ///
+    /// This method receives target file path, but does not write file to the
+    /// path. See: https://github.com/swc-project/swc/issues/1255
+    #[allow(clippy::too_many_arguments)]
+    pub fn print<T>(&self, node: &T, args: PrintArgs) -> Result<swc_compiler_base::TransformOutput, anyhow::Error>
+    where
+        T: Node + VisitWith<swc_compiler_base::IdentCollector>,
+    {
+        swc_compiler_base::print(self.cm.clone(), node, args)
+    }
+}
 
 #[cfg(feature = "wasm")]
 pub mod wasm;
@@ -176,9 +229,7 @@ impl InstrumentationVisitor {
         is_module: IsModule,
         sourcemap: Option<&str>,
     ) -> Result<TransformOutput, Box<dyn Error>> {
-        let compiler = Compiler::new(Arc::new(swc_core::common::SourceMap::new(
-            FilePathMapping::empty(),
-        )));
+        let compiler = Compiler::new(Arc::new(swc_common::SourceMap::default()));
 
         // Parse input sourcemap if provided
         let sourcemap =

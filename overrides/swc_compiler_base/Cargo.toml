@@ -1,0 +1,35 @@
+[package]
+authors       = ["강동윤 <kdy1997.dev@gmail.com>"]
+description   = "Base crate for the 'swc' crate. This is not a public API."
+documentation = "https://rustdoc.swc.rs/swc_compiler_base/"
+edition = "2021"
+include       = ["Cargo.toml", "src/**/*.rs"]
+license       = "Apache-2.0"
+name          = "swc_compiler_base"
+repository    = "https://github.com/swc-project/swc.git"
+version       = "39.0.0"
+
+[features]
+node = []
+
+[dependencies]
+anyhow        = "1.0.98"
+base64        = "0.22.1"
+bytes-str     = "0.2.5"
+once_cell     = "1.19.0"
+pathdiff      = "0.2.1"
+rustc-hash    = "2"
+serde         = "1.0.225"
+serde_json    = "1.0.140"
+swc_sourcemap = { version = "9.3.4", default-features = false }
+
+swc_atoms = { version = "9.0.0", default-features = false }
+swc_common = { version = "17.0.1", features = [
+  "sourcemap",
+] }
+swc_config = { version = "3.1.2", default-features = false }
+swc_ecma_ast = { version = "18.0.0", default-features = false }
+swc_ecma_codegen = { version = "20.0.0", default-features = false }
+swc_ecma_parser = { version = "27.0.3", default-features = false, features = ["typescript"] }
+swc_ecma_visit = { version = "18.0.1", default-features = false }
+swc_timer = { version = "1.0.0", default-features = false }

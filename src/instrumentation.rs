@@ -4,16 +4,31 @@
  **/
 use crate::config::InstrumentationConfig;
 use std::path::PathBuf;
-use swc_core::common::{Span, SyntaxContext};
-use swc_core::ecma::{
-    ast::{
-        ArrowExpr, AssignExpr, AssignTarget, BlockStmt, ClassDecl, ClassExpr, ClassMethod,
-        Constructor, Expr, FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem,
-        Param, Pat, PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
-    },
-    atoms::Atom,
+use swc_common::{Span, SyntaxContext};
+use swc_ecma_ast::{
+    ArrowExpr, AssignExpr, AssignTarget, BlockStmt, ClassDecl, ClassExpr, ClassMethod,
+    Constructor, Expr, FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem,
+    Param, Pat, PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
 };
-use swc_core::quote;
+use swc_atoms::Atom;
+use swc_ecma_quote::quote;
+
+pub (crate) mod swc_core {
+    pub mod common {
+        pub use swc_common::*;
+    }
+    pub mod ecma {
+       pub mod ast {
+            pub use swc_ecma_ast::*;
+        }
+    }
+    pub mod atoms {
+        pub use swc_atoms::*;
+    }
+    pub mod quote {
+        pub use swc_ecma_quote::*;
+    }
+}
 
 macro_rules! ident {
     ($name:expr) => {
