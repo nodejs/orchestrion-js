@@ -9,8 +9,7 @@ fn export_alias_class_mjs() {
         Config::new_single(InstrumentationConfig::new(
             "Undici:fetch",
             test_module_matcher(),
-            FunctionQuery::class_method("Undici", "fetch", FunctionKind::Async)
-                .as_export_alias(),
+            FunctionQuery::class_method("Undici", "fetch", FunctionKind::Async).as_export_alias(),
         )),
     );
 }
