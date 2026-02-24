@@ -14,6 +14,7 @@ fn index_cjs() {
                 method_name: "fetch".to_string(),
                 kind: FunctionKind::Async,
                 index: 2,
+                is_export_alias: false,
             },
         )),
     );

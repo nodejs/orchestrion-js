@@ -3,6 +3,7 @@
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
 use crate::config::InstrumentationConfig;
+use std::collections::HashMap;
 use std::path::PathBuf;
 use swc_core::common::{Span, SyntaxContext};
 use swc_core::ecma::{
@@ -34,6 +35,7 @@ pub struct Instrumentation {
     is_correct_class: bool,
     has_injected: bool,
     module_version: Option<String>,
+    original_query_name: Option<String>,
 }
 
 impl Instrumentation {
@@ -45,11 +47,32 @@ impl Instrumentation {
             is_correct_class: false,
             has_injected: false,
             module_version: None,
+            original_query_name: None,
         }
     }
 
     pub fn set_module_version(&mut self, version: &str) {
         self.module_version = Some(version.to_string());
+    }
+
+    pub(crate) fn resolve_export_aliases(&mut self, aliases: &HashMap<String, String>) {
+        let original_name = self.config.function_query.name().to_string();
+        self.config.function_query.resolve_export_alias(aliases);
+        if self.config.function_query.name() != original_name {
+            self.original_query_name = Some(original_name);
+        }
+    }
+
+    #[must_use]
+    pub(crate) fn query_display_name(&self) -> String {
+        match &self.original_query_name {
+            Some(original) => format!(
+                "{} (local name: {})",
+                original,
+                self.config.function_query.name()
+            ),
+            None => self.config.function_query.name().to_string(),
+        }
     }
 
     #[must_use]

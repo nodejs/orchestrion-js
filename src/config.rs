@@ -18,7 +18,7 @@ pub struct ModuleMatcher {
     /// The name of the module you want to match
     pub name: String,
     /// The semver range that you want to match
-    #[tsify(type = "string")]
+    #[cfg_attr(feature = "wasm", tsify(type = "string"))]
     pub version_range: Range,
     /// The path of the file you want to match from the module root
     pub file_path: PathBuf,

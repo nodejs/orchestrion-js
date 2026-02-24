@@ -18,7 +18,7 @@
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License.
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
-use std::{error::Error, path::PathBuf, sync::Arc};
+use std::{collections::HashMap, error::Error, path::PathBuf, sync::Arc};
 use swc::{
     config::{IsModule, SourceMapsConfig},
     sourcemap::SourceMap,
@@ -28,8 +28,9 @@ use swc_core::{
     common::{comments::Comments, errors::ColorConfig, FileName, FilePathMapping},
     ecma::{
         ast::{
-            AssignExpr, ClassDecl, ClassExpr, ClassMethod, Constructor, EsVersion, FnDecl,
-            MethodProp, Module, Script, Str, VarDecl,
+            AssignExpr, ClassDecl, ClassExpr, ClassMethod, Constructor, EsVersion, ExportSpecifier,
+            FnDecl, MethodProp, Module, ModuleDecl, ModuleExportName, ModuleItem, Script, Str,
+            VarDecl,
         },
         visit::{VisitMut, VisitMutWith},
     },
@@ -70,6 +71,37 @@ pub struct TransformOutput {
     pub code: String,
     /// The sourcemap for the transformation (if generated)
     pub map: Option<String>,
+}
+
+fn module_export_name_to_string(name: &ModuleExportName) -> String {
+    match name {
+        ModuleExportName::Ident(ident) => ident.sym.to_string(),
+        ModuleExportName::Str(s) => s.value.to_string(),
+    }
+}
+
+/// Collects ESM named export aliases from a module.
+/// For `export { local as exported }`, maps `exported -> local`.
+/// Skips re-exports from other modules (i.e., `export { x } from 'other'`).
+fn collect_export_aliases(module: &Module) -> HashMap<String, String> {
+    let mut aliases = HashMap::new();
+    for item in &module.body {
+        if let ModuleItem::ModuleDecl(ModuleDecl::ExportNamed(named)) = item {
+            if named.src.is_some() {
+                continue;
+            }
+            for spec in &named.specifiers {
+                if let ExportSpecifier::Named(named_spec) = spec {
+                    if let Some(exported) = &named_spec.exported {
+                        let exported_name = module_export_name_to_string(exported);
+                        let local_name = module_export_name_to_string(&named_spec.orig);
+                        aliases.insert(exported_name, local_name);
+                    }
+                }
+            }
+        }
+    }
+    aliases
 }
 
 /// This struct is responsible for managing all instrumentations. It's created from a YAML string
@@ -149,7 +181,7 @@ impl InstrumentationVisitor {
                 if instr.has_injected() {
                     None
                 } else {
-                    Some(instr.config.function_query.name().to_string())
+                    Some(instr.query_display_name())
                 }
             })
             .collect();
@@ -279,6 +311,13 @@ macro_rules! visit_with_all_fn {
 
 impl VisitMut for InstrumentationVisitor {
     fn visit_mut_module(&mut self, item: &mut Module) {
+        let aliases = collect_export_aliases(item);
+        if !aliases.is_empty() {
+            for instr in &mut self.instrumentations {
+                instr.resolve_export_aliases(&aliases);
+            }
+        }
+
         let mut line = quote!(
             "import { tracingChannel as tr_ch_apm_tracingChannel } from 'dc';" as ModuleItem,
         );

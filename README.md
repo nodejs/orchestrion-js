@@ -79,6 +79,32 @@ matcher.free();
 transformer.free();
 ```
 
+### Export Aliases
+
+When a module re-exports a function or class under a different name using
+`export { local as exported }`, you can target the **exported** name in your
+`FunctionQuery` by setting `isExportAlias: true`. The transformer will resolve
+the alias to the local declaration before matching.
+
+For example, given:
+
+```js
+function f(url) { return fetch(url); }
+export { f as fetchAliased };
+```
+
+You can target `fetchAliased` in your config:
+
+```js
+const instrumentation = {
+    channelName: "my-channel",
+    module: { name: "my-module", versionRange: ">=1.0.0", filePath: "./index.mjs" },
+    functionQuery: { functionName: "fetchAliased", kind: "Async", isExportAlias: true },
+};
+```
+
+This also works for class exports (e.g., `export { MyClass as PublicClass }`).
+
 ### API Reference
 
 ```ts
@@ -91,20 +117,21 @@ type FunctionKind = "Sync" | "Async";
 ```ts
 type FunctionQuery =
     | // Match class constructor
-    { className: string; index?: number }
+    { className: string; index?: number; isExportAlias?: boolean }
     | // Match class method
     {
         className: string;
         methodName: string;
         kind: FunctionKind;
         index?: number;
+        isExportAlias?: boolean;
     }
     | // Match method on objects
     { methodName: string; kind: FunctionKind; index?: number }
     | // Match standalone function
-    { functionName: string; kind: FunctionKind; index?: number }
+    { functionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean }
     | // Match arrow function or function expression
-    { expressionName: string; kind: FunctionKind; index?: number };
+    { expressionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean };
 ```
 
 #### **`ModuleMatcher`**

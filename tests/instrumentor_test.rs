@@ -12,6 +12,8 @@ mod constructor_mjs;
 mod decl_cjs;
 mod decl_mjs;
 mod decl_mjs_mismatched_type;
+mod export_alias_class_mjs;
+mod export_alias_mjs;
 mod expr_cjs;
 mod expr_mjs;
 mod index_cjs;

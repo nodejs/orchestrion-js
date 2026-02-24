@@ -2,6 +2,7 @@
  * Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License.
  * This product includes software developed at Datadog (<https://www.datadoghq.com>/). Copyright 2025 Datadog, Inc.
  **/
+use std::collections::HashMap;
 use swc_core::ecma::ast::FnDecl;
 
 #[derive(Debug, Clone)]
@@ -53,12 +54,18 @@ pub enum FunctionQuery {
         #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
+        #[cfg_attr(feature = "serde", serde(default))]
+        #[cfg_attr(feature = "wasm", tsify(optional))]
+        is_export_alias: bool,
     },
     ClassConstructor {
         class_name: String,
         #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
+        #[cfg_attr(feature = "serde", serde(default))]
+        #[cfg_attr(feature = "wasm", tsify(optional))]
+        is_export_alias: bool,
     },
     ObjectMethod {
         method_name: String,
@@ -73,6 +80,9 @@ pub enum FunctionQuery {
         #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
+        #[cfg_attr(feature = "serde", serde(default))]
+        #[cfg_attr(feature = "wasm", tsify(optional))]
+        is_export_alias: bool,
     },
     FunctionExpression {
         expression_name: String,
@@ -80,6 +90,9 @@ pub enum FunctionQuery {
         #[cfg_attr(feature = "serde", serde(default))]
         #[cfg_attr(feature = "wasm", tsify(optional))]
         index: usize,
+        #[cfg_attr(feature = "serde", serde(default))]
+        #[cfg_attr(feature = "wasm", tsify(optional))]
+        is_export_alias: bool,
     },
 }
 
@@ -89,6 +102,7 @@ impl FunctionQuery {
         FunctionQuery::ClassConstructor {
             class_name: class_name.to_string(),
             index: 0,
+            is_export_alias: false,
         }
     }
 
@@ -99,6 +113,7 @@ impl FunctionQuery {
             method_name: method_name.to_string(),
             kind,
             index: 0,
+            is_export_alias: false,
         }
     }
 
@@ -117,6 +132,7 @@ impl FunctionQuery {
             function_name: function_name.to_string(),
             kind,
             index: 0,
+            is_export_alias: false,
         }
     }
 
@@ -126,7 +142,28 @@ impl FunctionQuery {
             expression_name: expression_name.to_string(),
             kind,
             index: 0,
+            is_export_alias: false,
         }
+    }
+
+    #[must_use]
+    pub fn as_export_alias(mut self) -> Self {
+        match &mut self {
+            FunctionQuery::ClassConstructor {
+                is_export_alias, ..
+            }
+            | FunctionQuery::ClassMethod {
+                is_export_alias, ..
+            }
+            | FunctionQuery::FunctionDeclaration {
+                is_export_alias, ..
+            }
+            | FunctionQuery::FunctionExpression {
+                is_export_alias, ..
+            } => *is_export_alias = true,
+            FunctionQuery::ObjectMethod { .. } => {}
+        }
+        self
     }
 
     pub(crate) fn kind(&self) -> &FunctionKind {
@@ -178,6 +215,40 @@ impl FunctionQuery {
             FunctionQuery::ClassConstructor { class_name, .. }
             | FunctionQuery::ClassMethod { class_name, .. } => Some(class_name),
             _ => None,
+        }
+    }
+
+    fn resolvable_name_mut(&mut self) -> Option<(&mut String, bool)> {
+        match self {
+            FunctionQuery::ClassConstructor {
+                class_name,
+                is_export_alias,
+                ..
+            }
+            | FunctionQuery::ClassMethod {
+                class_name,
+                is_export_alias,
+                ..
+            } => Some((class_name, *is_export_alias)),
+            FunctionQuery::FunctionDeclaration {
+                function_name,
+                is_export_alias,
+                ..
+            } => Some((function_name, *is_export_alias)),
+            FunctionQuery::FunctionExpression {
+                expression_name,
+                is_export_alias,
+                ..
+            } => Some((expression_name, *is_export_alias)),
+            FunctionQuery::ObjectMethod { .. } => None,
+        }
+    }
+
+    pub(crate) fn resolve_export_alias(&mut self, aliases: &HashMap<String, String>) {
+        if let Some((name, true)) = self.resolvable_name_mut() {
+            if let Some(local) = aliases.get(name.as_str()) {
+                name.clone_from(local);
+            }
         }
     }
 
