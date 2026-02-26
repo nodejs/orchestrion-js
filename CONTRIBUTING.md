@@ -25,7 +25,7 @@ Once you have some code ready, open a PR, [linking it to the issue](https://docs
 ### Setting up your development environment
 
 ```bash
-$ git clone git@github.com:DataDog/orchestrion-js.git
+$ git clone git@github.com:nodejs/orchestrion-js.git
 $ cd orchestrion-js
 $ rustup install stable
 $ cargo check # or `cargo test`, etc.

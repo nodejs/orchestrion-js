@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apm-js-collab/orchestrion-js.git"
+    "url": "https://github.com/nodejs/orchestrion-js.git"
   },
   "files": [
     "./pkg/orchestrion_js.js",
