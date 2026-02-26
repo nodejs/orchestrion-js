@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.9.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.8.2...code-transformer-v0.9.0) (2026-02-26)
+
+
+### Features
+
+* Add support for matching export alias ([#29](https://github.com/nodejs/orchestrion-js/issues/29)) ([2169e27](https://github.com/nodejs/orchestrion-js/commit/2169e27fc29ad89cc8b6bbc4ece3be59ab0c87a6))
+* Inline wasm binary ([#46](https://github.com/nodejs/orchestrion-js/issues/46)) ([9da6297](https://github.com/nodejs/orchestrion-js/commit/9da6297762dbb7dc46e11a9d62fa8b1b462ba17d))
+* Load wasm lazily ([#45](https://github.com/nodejs/orchestrion-js/issues/45)) ([399e942](https://github.com/nodejs/orchestrion-js/commit/399e942fae21d9f16125eba20113c81940d191ff))
+
+
+### Bug Fixes
+
+* `versionRange` TypeScript definition ([#35](https://github.com/nodejs/orchestrion-js/issues/35)) ([89cff5a](https://github.com/nodejs/orchestrion-js/commit/89cff5a80bc1149c0bf0b930bf785c75b1d6ac2f))
+* Ensure build before publish ([#41](https://github.com/nodejs/orchestrion-js/issues/41)) ([e196dcf](https://github.com/nodejs/orchestrion-js/commit/e196dcf02ba0eac36811180f271db7ef1dc789db))
+* Hardcode wrapped arrow functions to not specify `async` key to avoid wrapping non-native promises ([#48](https://github.com/nodejs/orchestrion-js/issues/48)) ([8b43c92](https://github.com/nodejs/orchestrion-js/commit/8b43c9260efeb5602185b80b6ff827790fa1ee43))
+* Properly assign `async` keyword only to wrapped functions that had `async` keyword on original ([#50](https://github.com/nodejs/orchestrion-js/issues/50)) ([0495589](https://github.com/nodejs/orchestrion-js/commit/04955898ee1ce3a280f0d029e1fb605b198a3217))
+
 ## [0.8.2](https://github.com/apm-js-collab/orchestrion-js/compare/code-transformer-v0.8.1...code-transformer-v0.8.2) (2025-09-26)
 
 
