@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.10.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.9.0...code-transformer-v0.10.0) (2026-02-26)
+
+
+### Features
+
+* Added support for wrapping private class methods ([22d069d](https://github.com/nodejs/orchestrion-js/commit/22d069d23ea5fd1a4bc21f572b8febd6efae9c72))
+* Added support for wrapping private class methods ([3b43b02](https://github.com/nodejs/orchestrion-js/commit/3b43b029c6ff58a3bd67c986fbd3c0fdd3cdaa7b))
+
+
+### Bug Fixes
+
+* fixed order of `PrivateMethod` in enum so it is favored over `ClassConstructor` ([96f3d8e](https://github.com/nodejs/orchestrion-js/commit/96f3d8ee72962e651a553333f463b6c6b608487c))
+
 ## [0.9.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.8.2...code-transformer-v0.9.0) (2026-02-26)
 
 
