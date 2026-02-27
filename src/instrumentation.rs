@@ -431,17 +431,15 @@ impl Instrumentation {
                 }
             }
         } else if let Some(class_expr) = node.right.as_mut_class() {
-            if let AssignTarget::Simple(target) = &node.left {
-                if let SimpleAssignTarget::Ident(name) = target {
-                    if class_expr.ident.is_none() {
-                        class_expr.ident = Some(name.id.clone());
-                    } else {
-                        self.is_correct_class = self
-                            .config
-                            .function_query
-                            .class_name()
-                            .is_none_or(|class| name.id.sym.as_ref() == class);
-                    }
+            if let AssignTarget::Simple(SimpleAssignTarget::Ident(name)) = &node.left {
+                if class_expr.ident.is_none() {
+                    class_expr.ident = Some(name.id.clone());
+                } else {
+                    self.is_correct_class = self
+                        .config
+                        .function_query
+                        .class_name()
+                        .is_none_or(|class| name.id.sym.as_ref() == class);
                 }
             }
         }
