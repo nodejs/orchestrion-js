@@ -287,6 +287,18 @@ impl Instrumentation {
                     if let Pat::Ident(name) = &decl.name {
                         traced = self.trace_expr_or_count(func_expr, &name.id.sym);
                     }
+                } else if let Some(class_expr) = init.as_mut_class() {
+                    if let Pat::Ident(name) = &decl.name {
+                        if class_expr.ident.is_none() {
+                            class_expr.ident = Some(name.id.clone());
+                        } else {
+                            self.is_correct_class = self
+                                .config
+                                .function_query
+                                .class_name()
+                                .is_none_or(|class| name.id.sym.as_ref() == class);
+                        }
+                    }
                 }
             }
         }
@@ -303,11 +315,13 @@ impl Instrumentation {
     }
 
     pub fn visit_mut_class_expr(&mut self, node: &mut ClassExpr) -> bool {
-        self.is_correct_class = self.config.function_query.class_name().is_none_or(|class| {
-            node.ident
-                .as_ref()
-                .is_some_and(|ident| ident.sym.as_ref() == class)
-        });
+        if !self.is_correct_class {
+            self.is_correct_class = self.config.function_query.class_name().is_none_or(|class| {
+                node.ident
+                    .as_ref()
+                    .is_some_and(|ident| ident.sym.as_ref() == class)
+            });
+        }
         true
     }
 
@@ -414,6 +428,20 @@ impl Instrumentation {
                         }
                     }
                     _ => {}
+                }
+            }
+        } else if let Some(class_expr) = node.right.as_mut_class() {
+            if let AssignTarget::Simple(target) = &node.left {
+                if let SimpleAssignTarget::Ident(name) = target {
+                    if class_expr.ident.is_none() {
+                        class_expr.ident = Some(name.id.clone());
+                    } else {
+                        self.is_correct_class = self
+                            .config
+                            .function_query
+                            .class_name()
+                            .is_none_or(|class| name.id.sym.as_ref() == class);
+                    }
                 }
             }
         }
