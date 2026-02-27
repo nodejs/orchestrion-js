@@ -20,18 +20,19 @@ pub(crate) enum FunctionType {
 pub enum FunctionKind {
     Sync,
     Async,
+    AsyncGenerator,
 }
 
 impl FunctionKind {
     #[must_use]
     pub fn is_async(&self) -> bool {
-        matches!(self, FunctionKind::Async)
+        matches!(self, FunctionKind::Async | FunctionKind::AsyncGenerator)
     }
 
     #[must_use]
     pub fn tracing_operator(&self) -> &'static str {
         match self {
-            FunctionKind::Sync => "traceSync",
+            FunctionKind::Sync | FunctionKind::AsyncGenerator => "traceSync",
             FunctionKind::Async => "tracePromise",
         }
     }

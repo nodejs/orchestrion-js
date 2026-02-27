@@ -9,8 +9,9 @@ use swc_core::common::{Span, SyntaxContext};
 use swc_core::ecma::{
     ast::{
         ArrowExpr, AssignExpr, AssignTarget, BlockStmt, ClassDecl, ClassExpr, ClassMethod,
-        Constructor, Expr, FnDecl, FnExpr, Ident, Lit, MemberProp, MethodProp, Module, ModuleItem,
-        Param, Pat, PrivateMethod, PropName, Script, SimpleAssignTarget, Stmt, Str, VarDecl,
+        Constructor, Expr, FnDecl, FnExpr, Function, Ident, Lit, MemberProp, MethodProp, Module,
+        ModuleItem, Param, Pat, PrivateMethod, PropName, Script, SimpleAssignTarget, Stmt, Str,
+        VarDecl,
     },
     atoms::Atom,
 };
@@ -108,7 +109,13 @@ impl Instrumentation {
         define_channel
     }
 
-    fn insert_tracing(&mut self, body: &mut BlockStmt, params: &[Param], is_async: bool) {
+    fn insert_tracing(
+        &mut self,
+        body: &mut BlockStmt,
+        params: &[Param],
+        is_async: bool,
+        is_generator: bool,
+    ) {
         self.count += 1;
 
         let original_stmts = std::mem::take(&mut body.stmts);
@@ -122,30 +129,40 @@ impl Instrumentation {
 
         let original_params: Vec<Pat> = params.iter().map(|p| p.pat.clone()).collect();
 
-        let wrapped_fn = new_fn(original_body, original_params, is_async);
+        let wrapped_fn = new_fn(original_body, original_params, is_async, is_generator);
 
         let traced_body = BlockStmt {
             span: Span::default(),
             ctxt: SyntaxContext::empty(),
             stmts: vec![
-                quote!("const __apm$wrapped = $wrapped;" as Stmt, wrapped: Expr = wrapped_fn.into()),
+                quote!("const __apm$wrapped = $wrapped;" as Stmt, wrapped: Expr = wrapped_fn),
                 quote!("return __apm$wrapped.apply(null, __apm$original_args);" as Stmt),
             ],
         };
 
-        let traced_fn = new_fn(traced_body, vec![], is_async);
+        // When is_generator, __apm$traced is a regular (non-async) arrow since generator
+        // creation is synchronous. Otherwise, it mirrors the original function's async-ness.
+        let traced_fn = new_fn(
+            traced_body,
+            vec![],
+            if is_generator { false } else { is_async },
+            false,
+        );
 
         let id_name = self.config.get_identifier_name();
         let ch_ident = ident!(format!("tr_ch_apm${}", &id_name));
-        let trace_ident = ident!(format!(
-            "tr_ch_apm${}.{}",
-            &id_name,
+
+        // For generators, always use traceSync regardless of configured kind
+        let tracing_op = if is_generator {
+            "traceSync"
+        } else {
             self.config.function_query.kind().tracing_operator()
-        ));
+        };
+        let trace_ident = ident!(format!("tr_ch_apm${}.{}", &id_name, tracing_op));
 
         body.stmts = vec![
             quote!("const __apm$original_args = arguments" as Stmt),
-            quote!("const __apm$traced = $traced;" as Stmt, traced: Expr = traced_fn.into()),
+            quote!("const __apm$traced = $traced;" as Stmt, traced: Expr = traced_fn),
             quote!(
                 "if (!$ch.hasSubscribers) return __apm$traced();" as Stmt,
                 ch = ch_ident
@@ -230,12 +247,18 @@ impl Instrumentation {
             .matches_expr(&mut self.count, name.as_ref())
             && func_expr.function.body.is_some()
         {
+            let is_generator = func_expr.function.is_generator;
             if let Some(body) = func_expr.function.body.as_mut() {
                 self.insert_tracing(
                     body,
                     &func_expr.function.params,
                     func_expr.function.is_async,
+                    is_generator,
                 );
+            }
+            if is_generator {
+                func_expr.function.is_async = false;
+                func_expr.function.is_generator = false;
             }
             true
         } else {
@@ -272,8 +295,18 @@ impl Instrumentation {
             .matches_decl(node, &mut self.count)
             && node.function.body.is_some()
         {
+            let is_generator = node.function.is_generator;
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, &node.function.params, node.function.is_async);
+                self.insert_tracing(
+                    body,
+                    &node.function.params,
+                    node.function.is_async,
+                    is_generator,
+                );
+            }
+            if is_generator {
+                node.function.is_async = false;
+                node.function.is_generator = false;
             }
         }
         true
@@ -328,8 +361,18 @@ impl Instrumentation {
             .matches_method(&mut self.count, name.as_ref())
             && node.function.body.is_some()
         {
+            let is_generator = node.function.is_generator;
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, &node.function.params, node.function.is_async);
+                self.insert_tracing(
+                    body,
+                    &node.function.params,
+                    node.function.is_async,
+                    is_generator,
+                );
+            }
+            if is_generator {
+                node.function.is_async = false;
+                node.function.is_generator = false;
             }
         }
         true
@@ -349,8 +392,18 @@ impl Instrumentation {
             .matches_private_method(&mut self.count, name.as_ref())
             && node.function.body.is_some()
         {
+            let is_generator = node.function.is_generator;
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, &node.function.params, node.function.is_async);
+                self.insert_tracing(
+                    body,
+                    &node.function.params,
+                    node.function.is_async,
+                    is_generator,
+                );
+            }
+            if is_generator {
+                node.function.is_async = false;
+                node.function.is_generator = false;
             }
         }
         true
@@ -382,8 +435,18 @@ impl Instrumentation {
             .matches_method(&mut self.count, name.as_ref())
             && node.function.body.is_some()
         {
+            let is_generator = node.function.is_generator;
             if let Some(body) = node.function.body.as_mut() {
-                self.insert_tracing(body, &node.function.params, node.function.is_async);
+                self.insert_tracing(
+                    body,
+                    &node.function.params,
+                    node.function.is_async,
+                    is_generator,
+                );
+            }
+            if is_generator {
+                node.function.is_async = false;
+                node.function.is_generator = false;
             }
         }
         false
@@ -435,15 +498,39 @@ pub fn get_script_start_index(script: &Script) -> usize {
 }
 
 #[must_use]
-pub fn new_fn(body: BlockStmt, params: Vec<Pat>, is_async: bool) -> ArrowExpr {
-    ArrowExpr {
-        params,
-        body: Box::new(body.into()),
-        is_async,
-        is_generator: false,
-        type_params: None,
-        return_type: None,
-        span: Span::default(),
-        ctxt: SyntaxContext::empty(),
+pub fn new_fn(body: BlockStmt, params: Vec<Pat>, is_async: bool, is_generator: bool) -> Expr {
+    if is_generator {
+        Expr::Fn(FnExpr {
+            ident: None,
+            function: Box::new(Function {
+                params: params
+                    .into_iter()
+                    .map(|p| Param {
+                        span: Span::default(),
+                        decorators: vec![],
+                        pat: p,
+                    })
+                    .collect(),
+                decorators: vec![],
+                span: Span::default(),
+                ctxt: SyntaxContext::empty(),
+                body: Some(body),
+                is_generator: true,
+                is_async,
+                type_params: None,
+                return_type: None,
+            }),
+        })
+    } else {
+        Expr::Arrow(ArrowExpr {
+            params,
+            body: Box::new(body.into()),
+            is_async,
+            is_generator: false,
+            type_params: None,
+            return_type: None,
+            span: Span::default(),
+            ctxt: SyntaxContext::empty(),
+        })
     }
 }

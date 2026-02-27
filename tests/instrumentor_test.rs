@@ -5,6 +5,12 @@
 mod common;
 
 mod arguments_mutation;
+mod async_generator_class_method_cjs;
+mod async_generator_decl_cjs;
+mod async_generator_decl_mjs;
+mod async_generator_expr_cjs;
+mod async_generator_object_method_cjs;
+mod async_generator_private_method_cjs;
 mod class_expression_cjs;
 mod class_method_cjs;
 mod constructor_cjs;
