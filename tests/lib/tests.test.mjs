@@ -1,0 +1,283 @@
+import { create } from '../../lib/index.js'
+import { describe, test, expect } from 'vitest'
+import { readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+const TEST_MODULE_NAME = 'undici'
+const TEST_MODULE_VERSION = '0.0.1'
+const TEST_MODULE_PATH = 'index.mjs'
+const WINDOWS_MODULE_PATH = 'lib/index.mjs'
+
+function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH } = {}) {
+  const ext = mjs ? 'mjs' : 'js'
+  const testDir = join(__dirname, '..', testName)
+
+  const instrumentedJs = join(testDir, 'instrumented.js')
+  const instrumentedMjs = join(testDir, 'instrumented.mjs')
+  if (existsSync(instrumentedJs)) rmSync(instrumentedJs)
+  if (existsSync(instrumentedMjs)) rmSync(instrumentedMjs)
+
+  const instrumentor = create(configs)
+  const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, filePath)
+
+  const code = readFileSync(join(testDir, `mod.${ext}`), 'utf-8')
+  const moduleType = mjs ? 'esm' : 'cjs'
+
+  try {
+    const transformed = transformer.transform(code, moduleType)
+    writeFileSync(join(testDir, `instrumented.${ext}`), transformed.code)
+  } catch {
+    // Injection failure — do not write instrumented file
+  }
+
+  const result = spawnSync('node', [`test.${ext}`], { cwd: testDir, stdio: 'pipe' })
+  if (result.status !== 0) {
+    const output = (result.stdout?.toString() || '') + (result.stderr?.toString() || '')
+    throw new Error(`node test.${ext} exited with ${result.status}:\n${output}`)
+  }
+  expect(result.status).toBe(0)
+}
+
+describe('arguments_mutation', () => {
+  test('instruments multiple function declarations', () => {
+    runTest('arguments_mutation', [
+      {
+        channelName: 'fetch_simple',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch_simple', kind: 'Sync' },
+      },
+      {
+        channelName: 'fetch_complex',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch_complex', kind: 'Sync' },
+      },
+    ])
+  })
+})
+
+describe('class_expression_cjs', () => {
+  test('instruments async class method on class expression', () => {
+    runTest('class_expression_cjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('class_method_cjs', () => {
+  test('instruments async class method', () => {
+    runTest('class_method_cjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('constructor_cjs', () => {
+  test('instruments class constructor (cjs)', () => {
+    runTest('constructor_cjs', [
+      {
+        channelName: 'Undici_constructor',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici' },
+      },
+    ])
+  })
+})
+
+describe('constructor_mjs', () => {
+  test('instruments class constructor (mjs)', () => {
+    runTest('constructor_mjs', [
+      {
+        channelName: 'Undici_constructor',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici' },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('decl_cjs', () => {
+  test('instruments async function declaration (cjs)', () => {
+    runTest('decl_cjs', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('decl_mjs', () => {
+  test('instruments async function declaration (mjs)', () => {
+    runTest('decl_mjs', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('decl_mjs_mismatched_type', () => {
+  test('instruments async function declaration in mjs with mismatched module type', () => {
+    runTest('decl_mjs_mismatched_type', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('expr_cjs', () => {
+  test('instruments async function expression (cjs)', () => {
+    runTest('expr_cjs', [
+      {
+        channelName: 'fetch_expr',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { expressionName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('expr_mjs', () => {
+  test('instruments async function expression (mjs)', () => {
+    runTest('expr_mjs', [
+      {
+        channelName: 'fetch_expr',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { expressionName: 'fetch', kind: 'Async' },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('index_cjs', () => {
+  test('instruments class method by index', () => {
+    runTest('index_cjs', [
+      {
+        channelName: 'Undici_fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async', index: 2 },
+      },
+    ])
+  })
+})
+
+describe('injection_failure', () => {
+  test('does not write instrumented file when no injection points found', () => {
+    runTest('injection_failure', [
+      {
+        channelName: 'some_expr',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { expressionName: 'some', kind: 'Async' },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('multiple_class_method_cjs', () => {
+  test('instruments multiple class methods', () => {
+    runTest('multiple_class_method_cjs', [
+      {
+        channelName: 'Undici_fetch1',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch1', kind: 'Async' },
+      },
+      {
+        channelName: 'Undici_fetch2',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch2', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('multiple_load_cjs', () => {
+  test('instruments class method across multiple loads', () => {
+    runTest('multiple_load_cjs', [
+      {
+        channelName: 'Undici_fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('nested_functions', () => {
+  test('instruments sync function declaration with nested functions', () => {
+    runTest('nested_functions', [
+      {
+        channelName: 'nested_fn',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'addHook', kind: 'Sync' },
+      },
+    ])
+  })
+})
+
+describe('object_method_cjs', () => {
+  test('instruments async object method', () => {
+    runTest('object_method_cjs', [
+      {
+        channelName: 'Undici_fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('private_method_cjs', () => {
+  test('instruments async private class method', () => {
+    runTest('private_method_cjs', [
+      {
+        channelName: 'TestClass:testMe',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'TestClass', privateMethodName: 'testMe', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('windows_path', () => {
+  test('instruments with windows-style file path', () => {
+    runTest('windows_path', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: WINDOWS_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ], { filePath: 'lib\\index.mjs' })
+  })
+})
+
+describe.skip('export_alias tests (not supported in JS lib)', () => {
+  test.skip('const_class_export_alias_mjs', () => {})
+  test.skip('export_alias_class_mjs', () => {})
+  test.skip('export_alias_mjs', () => {})
+  test.skip('let_class_export_alias_mjs', () => {})
+  test.skip('var_class_export_alias_mjs', () => {})
+  test.skip('var_named_class_export_alias_mjs', () => {})
+})
+
+describe.skip('polyfill tests (not supported in JS lib)', () => {
+  test.skip('polyfill_cjs', () => {})
+  test.skip('polyfill_mjs', () => {})
+})

@@ -10,20 +10,38 @@ const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
 module.exports = class Up {
   constructor() {
+    const __apm$ctx = {
+      arguments,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
-      const __apm$wrapped = function () {
+      const __apm$wrapped = () => {
         console.log("constructor");
       };
-      return __apm$wrapped.apply(this, arguments);
+      return __apm$wrapped(...arguments);
     };
     if (!tr_ch_apm$up_constructor.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_constructor.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_constructor.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_constructor.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_constructor.end.publish(__apm$ctx);
+      }
     });
   }
   fetch() {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
       const __apm$wrapped = function () {
         console.log("fetch");
@@ -31,52 +49,142 @@ module.exports = class Up {
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_fetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_fetch.end.publish(__apm$ctx);
+      }
     });
   }
   asyncFetch() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_asyncFetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_asyncFetch.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_asyncFetch.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_asyncFetch.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_asyncFetch.error.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_asyncFetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_asyncFetch.end.publish(__apm$ctx);
+      }
     });
   }
   get() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_asyncGet.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_asyncGet.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_asyncGet.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_asyncGet.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_asyncGet.error.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_asyncGet.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_asyncGet.end.publish(__apm$ctx);
+      }
     });
   }
   #send() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_privateSend.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_privateSend.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_privateSend.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_privateSend.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_privateSend.error.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_privateSend.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_privateSend.end.publish(__apm$ctx);
+      }
     });
   }
   async send() {}
 };
 ",
-  "map": "{"version":3,"sources":["one/index.js"],"names":["module","exports","constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;AAAAA,OAAOC,UAAU;EAChBC;;;QACCC,QAAQC,IAAI;;;;;;;;;;;EAGbC;;;QACCF,QAAQC,IAAI;;;;;;;;;;;EAGNE;;;;;;;;;;;;EACNC;;;;;;;;;;;;EACMC;;;;;;;;;;;;QACAA","file":"one/index.js"}",
+  "map": "{"version":3,"sources":["one/index.js"],"names":["module","exports","constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;AAAAA,OAAOC,UAAU;EAChBC;;;;;;;QACCC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGNE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"one/index.js"}",
 }
 `;
 
@@ -90,20 +198,38 @@ const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
 export class Up {
   constructor() {
+    const __apm$ctx = {
+      arguments,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
-      const __apm$wrapped = function () {
+      const __apm$wrapped = () => {
         console.log("constructor");
       };
-      return __apm$wrapped.apply(this, arguments);
+      return __apm$wrapped(...arguments);
     };
     if (!tr_ch_apm$up_constructor.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_constructor.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_constructor.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_constructor.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_constructor.end.publish(__apm$ctx);
+      }
     });
   }
   fetch() {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
       const __apm$wrapped = function () {
         console.log("fetch");
@@ -111,52 +237,142 @@ export class Up {
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_fetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_fetch.end.publish(__apm$ctx);
+      }
     });
   }
   asyncFetch() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_asyncFetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_asyncFetch.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_asyncFetch.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_asyncFetch.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_asyncFetch.error.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_asyncFetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_asyncFetch.end.publish(__apm$ctx);
+      }
     });
   }
   get() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_asyncGet.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_asyncGet.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_asyncGet.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_asyncGet.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_asyncGet.error.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_asyncGet.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_asyncGet.end.publish(__apm$ctx);
+      }
     });
   }
   #send() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_privateSend.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_privateSend.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_privateSend.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_privateSend.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_privateSend.error.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_privateSend.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_privateSend.end.publish(__apm$ctx);
+      }
     });
   }
   async send() {}
 }
 ",
-  "map": "{"version":3,"sources":["one/index.js"],"names":["constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;OAAO;EACNA;;;QACCC,QAAQC,IAAI;;;;;;;;;;;EAGbC;;;QACCF,QAAQC,IAAI;;;;;;;;;;;EAGNE;;;;;;;;;;;;EACNC;;;;;;;;;;;;EACMC;;;;;;;;;;;;QACAA","file":"one/index.js"}",
+  "map": "{"version":3,"sources":["one/index.js"],"names":["constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;OAAO;EACNA;;;;;;;QACCC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGNE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"one/index.js"}",
 }
 `;
 
@@ -170,20 +386,38 @@ const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
 export class Up {
   constructor() {
+    const __apm$ctx = {
+      arguments,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
-      const __apm$wrapped = function () {
+      const __apm$wrapped = () => {
         console.log("constructor");
       };
-      return __apm$wrapped.apply(this, arguments);
+      return __apm$wrapped(...arguments);
     };
     if (!tr_ch_apm$up_constructor.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_constructor.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_constructor.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_constructor.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_constructor.end.publish(__apm$ctx);
+      }
     });
   }
   fetch(url) {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
       const __apm$wrapped = function (url) {
         console.log("fetch");
@@ -191,52 +425,142 @@ export class Up {
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_fetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_fetch.end.publish(__apm$ctx);
+      }
     });
   }
   asyncFetch() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_asyncFetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_asyncFetch.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_asyncFetch.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_asyncFetch.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_asyncFetch.error.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncFetch.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_asyncFetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_asyncFetch.end.publish(__apm$ctx);
+      }
     });
   }
   get() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_asyncGet.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_asyncGet.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_asyncGet.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_asyncGet.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_asyncGet.error.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_asyncGet.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_asyncGet.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_asyncGet.end.publish(__apm$ctx);
+      }
     });
   }
   #send() {
-    const __apm$traced = async () => {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
+    const __apm$traced = () => {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_privateSend.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_privateSend.tracePromise(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_privateSend.start.runStores(__apm$ctx, () => {
+      try {
+        let promise = __apm$traced();
+        if (!(promise instanceof Promise)) {
+          promise = Promise.resolve(promise);
+        }
+        return promise.then(result => {
+          __apm$ctx.result = result;
+          tr_ch_apm$up_privateSend.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncEnd.publish(__apm$ctx);
+          return result;
+        }, err => {
+          __apm$ctx.error = err;
+          tr_ch_apm$up_privateSend.error.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncStart.publish(__apm$ctx);
+          tr_ch_apm$up_privateSend.asyncEnd.publish(__apm$ctx);
+          return PromiseReject(err);
+        });
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_privateSend.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_privateSend.end.publish(__apm$ctx);
+      }
     });
   }
   async send() {}
 }
 ",
-  "map": "{"version":3,"sources":["module.js"],"names":["constructor","console","log","fetch","url","asyncFetch","get","send"],"mappings":";;;;;;OAAO;EACHA;;;QACIC,QAAQC,IAAI;;;;;;;;;;;EAEhBC,MAAMC;;sCAAAA;QACFH,QAAQC,IAAI;;;;;;;;;;;EAEVG;;;;;;;;;;;;EACNC;;;;;;;;;;;;EACMC;;;;;;;;;;;;QACAA","file":"module.js","sourceRoot":""}",
+  "map": "{"version":3,"sources":["module.js"],"names":["constructor","console","log","fetch","url","asyncFetch","get","send"],"mappings":";;;;;;OAAO;EACHA;;;;;;;QACIC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAEhBC,MAAMC;;;;;;;sCAAAA;QACFH,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAEVG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"module.js","sourceRoot":""}",
 }
 `;
 
@@ -249,6 +573,11 @@ export class Up {
     console.log("constructor");
   }
   fetch() {
+    const __apm$ctx = {
+      arguments,
+      self: this,
+      moduleVersion: "1.0.0"
+    };
     const __apm$traced = () => {
       const __apm$wrapped = function () {
         console.log("fetch");
@@ -256,14 +585,23 @@ export class Up {
       return __apm$wrapped.apply(this, arguments);
     };
     if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
-    return tr_ch_apm$up_fetch.traceSync(__apm$traced, {
-      arguments,
-      self: this,
-      moduleVersion: "1.0.0"
+    return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
+      try {
+        const result = __apm$traced();
+        __apm$ctx.result = result;
+        return result;
+      } catch (err) {
+        __apm$ctx.error = err;
+        tr_ch_apm$up_fetch.error.publish(__apm$ctx);
+        throw err;
+      } finally {
+        __apm$ctx.self ??= this;
+        tr_ch_apm$up_fetch.end.publish(__apm$ctx);
+      }
     });
   }
 }
 ",
-  "map": "{"version":3,"sources":["one/path/to/file.js"],"names":["constructor","console","log","fetch"],"mappings":";;OAAO;EACNA;IACCC,QAAQC,IAAI;;EAGbC;;;QACCF,QAAQC,IAAI","file":"one/path/to/file.js"}",
+  "map": "{"version":3,"sources":["one/path/to/file.js"],"names":["constructor","console","log","fetch"],"mappings":";;OAAO;EACNA;IACCC,QAAQC,IAAI;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI","file":"one/path/to/file.js"}",
 }
 `;
