@@ -135,15 +135,15 @@ export class Up {
 
         const originalPosition = sourceMapConsumer.originalPositionFor({
             // This is the position of the fetch function in the transformed JavaScript
-            line: 33,
-            column: 4,
+            line: 22,
+            column: 2,
         });
 
-        // This is the position of the fetch function in the original TypeScript
-        expect(originalPosition.line).toEqual(6);
+        // This is the position of the fetch function in the transpiled JavaScript
+        expect(originalPosition.line).toEqual(5);
         expect(originalPosition.column).toEqual(4);
 
-        sourceMapConsumer.destroy();
+        sourceMapConsumer.destroy?.();
     });
 
     test('should throw error when no injection points are found', () => {
@@ -163,7 +163,7 @@ export class Up {
 
         expect(() => {
             matchedTransforms.transform(noMatchSource, 'unknown');
-        }).toThrow('Failed to find injection points for: ["constructor", "fetch", "asyncFetch", "get", "send"]');
+        }).toThrow('Failed to find injection points for: ["constructor","fetch","asyncFetch","get","send"]');
     });
 });
 
