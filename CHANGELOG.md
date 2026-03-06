@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.9.0...code-transformer-v0.10.0) (2026-03-06)
+
+
+### Features
+
+* Convert windows path to unix path before comparing against ModuleMatcher file_path value. ([#40](https://github.com/nodejs/orchestrion-js/issues/40)) ([da7b7cb](https://github.com/nodejs/orchestrion-js/commit/da7b7cb1cc7d3feb6bdfddd28d6905807b001d2e))
+* Match more class declarations for export alias check ([#37](https://github.com/nodejs/orchestrion-js/issues/37)) ([804a9c6](https://github.com/nodejs/orchestrion-js/commit/804a9c6b91bc82bd5c1b61976544f097aa02f5e9))
+
 ## [0.9.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.8.2...code-transformer-v0.9.0) (2026-02-26)
 
 
