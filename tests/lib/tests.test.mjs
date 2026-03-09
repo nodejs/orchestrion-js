@@ -12,7 +12,7 @@ const TEST_MODULE_VERSION = '0.0.1'
 const TEST_MODULE_PATH = 'index.mjs'
 const WINDOWS_MODULE_PATH = 'lib/index.mjs'
 
-function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH } = {}) {
+function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH, dcModule } = {}) {
   const ext = mjs ? 'mjs' : 'js'
   const testDir = join(__dirname, '..', testName)
 
@@ -21,7 +21,7 @@ function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH 
   if (existsSync(instrumentedJs)) rmSync(instrumentedJs)
   if (existsSync(instrumentedMjs)) rmSync(instrumentedMjs)
 
-  const instrumentor = create(configs)
+  const instrumentor = create(configs, dcModule)
   const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, filePath)
 
   const code = readFileSync(join(testDir, `mod.${ext}`), 'utf-8')
@@ -256,6 +256,54 @@ describe('private_method_cjs', () => {
   })
 })
 
+describe('callback_cjs', () => {
+  test('instruments callback-style function', () => {
+    runTest('callback_cjs', [
+      {
+        channelName: 'fetch_cb',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Callback' },
+      },
+    ])
+  })
+})
+
+describe('iterator_cjs', () => {
+  test('instruments sync generator function', () => {
+    runTest('iterator_cjs', [
+      {
+        channelName: 'generate',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generate', kind: 'Iterator' },
+      },
+    ])
+  })
+})
+
+describe('async_iterator_cjs', () => {
+  test('instruments async generator function', () => {
+    runTest('async_iterator_cjs', [
+      {
+        channelName: 'generate_async',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generate', kind: 'AsyncIterator' },
+      },
+    ])
+  })
+})
+
+describe('instance_method_subclass_cjs', () => {
+  test('instruments inherited method via constructor patching on subclass', () => {
+    runTest('instance_method_subclass_cjs', [
+      {
+        channelName: 'Base_fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Base', methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
 describe('windows_path', () => {
   test('instruments with windows-style file path', () => {
     runTest('windows_path', [
@@ -340,7 +388,26 @@ describe('var_named_class_export_alias_mjs', () => {
   })
 })
 
-describe.skip('polyfill tests (not supported in JS lib)', () => {
-  test.skip('polyfill_cjs', () => {})
-  test.skip('polyfill_mjs', () => {})
+describe('polyfill_cjs', () => {
+  test('instruments with a custom dc module (cjs)', () => {
+    runTest('polyfill_cjs', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ], { dcModule: './polyfill.js' })
+  })
+})
+
+describe('polyfill_mjs', () => {
+  test('instruments with a custom dc module (mjs)', () => {
+    runTest('polyfill_mjs', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ], { mjs: true, dcModule: './polyfill.js' })
+  })
 })
