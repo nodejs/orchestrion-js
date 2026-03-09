@@ -268,13 +268,76 @@ describe('windows_path', () => {
   })
 })
 
-describe.skip('export_alias tests (not supported in JS lib)', () => {
-  test.skip('const_class_export_alias_mjs', () => {})
-  test.skip('export_alias_class_mjs', () => {})
-  test.skip('export_alias_mjs', () => {})
-  test.skip('let_class_export_alias_mjs', () => {})
-  test.skip('var_class_export_alias_mjs', () => {})
-  test.skip('var_named_class_export_alias_mjs', () => {})
+describe('export_alias_mjs', () => {
+  test('instruments async function declaration via export alias (mjs)', () => {
+    runTest('export_alias_mjs', [
+      {
+        channelName: 'fetch_alias',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetchAliased', kind: 'Async', isExportAlias: true },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('export_alias_class_mjs', () => {
+  test('instruments async class method via export alias (mjs)', () => {
+    runTest('export_alias_class_mjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async', isExportAlias: true },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('const_class_export_alias_mjs', () => {
+  test('instruments async class method via export alias on const class expression (mjs)', () => {
+    runTest('const_class_export_alias_mjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async', isExportAlias: true },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('let_class_export_alias_mjs', () => {
+  test('instruments async class method via export alias on let class expression (mjs)', () => {
+    runTest('let_class_export_alias_mjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async', isExportAlias: true },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('var_class_export_alias_mjs', () => {
+  test('instruments async class method via export alias on var class expression (mjs)', () => {
+    runTest('var_class_export_alias_mjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async', isExportAlias: true },
+      },
+    ], { mjs: true })
+  })
+})
+
+describe('var_named_class_export_alias_mjs', () => {
+  test('instruments async class method via export alias on named var class expression (mjs)', () => {
+    runTest('var_named_class_export_alias_mjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async', isExportAlias: true },
+      },
+    ], { mjs: true })
+  })
 })
 
 describe.skip('polyfill tests (not supported in JS lib)', () => {
