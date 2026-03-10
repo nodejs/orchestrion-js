@@ -29,7 +29,7 @@ jobs:
         run: yarn test
 
   # TODO: remove once JS rewrite lands
-  test:
+  test-old:
     name: Build, Lint & Test
     runs-on: ubuntu-latest
     steps:
