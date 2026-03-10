@@ -19,9 +19,9 @@ export interface TransformOutput {
 }
 
 /**
- * The kind of function - Sync or returns a promise
+ * The kind of function
  */
-export type FunctionKind = "Sync" | "Async";
+export type FunctionKind = "Sync" | "Async" | "AsyncIterator" | "Callback" | "Iterator";
 
 /**
  * Describes which function to instrument
