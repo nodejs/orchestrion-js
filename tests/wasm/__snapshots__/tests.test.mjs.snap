@@ -16,7 +16,7 @@ module.exports = class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = () => {
-        console.log("constructor");
+        console.log('constructor');
       };
       return __apm$wrapped(...arguments);
     };
@@ -44,7 +44,7 @@ module.exports = class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = function () {
-        console.log("fetch");
+        console.log('fetch');
       };
       return __apm$wrapped.apply(this, arguments);
     };
@@ -204,7 +204,7 @@ export class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = () => {
-        console.log("constructor");
+        console.log('constructor');
       };
       return __apm$wrapped(...arguments);
     };
@@ -232,7 +232,7 @@ export class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = function () {
-        console.log("fetch");
+        console.log('fetch');
       };
       return __apm$wrapped.apply(this, arguments);
     };
@@ -392,7 +392,7 @@ export class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = () => {
-        console.log("constructor");
+        console.log('constructor');
       };
       return __apm$wrapped(...arguments);
     };
@@ -420,7 +420,7 @@ export class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = function (url) {
-        console.log("fetch");
+        console.log('fetch');
       };
       return __apm$wrapped.apply(this, arguments);
     };
@@ -570,7 +570,7 @@ exports[`windows style paths > should transform ESM module correctly 1`] = `
 const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 export class Up {
   constructor() {
-    console.log("constructor");
+    console.log('constructor');
   }
   fetch() {
     const __apm$ctx = {
@@ -580,7 +580,7 @@ export class Up {
     };
     const __apm$traced = () => {
       const __apm$wrapped = function () {
-        console.log("fetch");
+        console.log('fetch');
       };
       return __apm$wrapped.apply(this, arguments);
     };
