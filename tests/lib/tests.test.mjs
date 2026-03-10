@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { SourceMapConsumer } from 'source-map'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -458,5 +459,45 @@ describe('custom_transform_cjs', () => {
         },
       },
     })
+  })
+})
+
+describe('source_map', () => {
+  test('maps generated positions back to original line/column', () => {
+    const originalCode = [
+      'async function fetch (url) {',
+      '  return 42;',
+      '}',
+      'module.exports = { fetch };',
+    ].join('\n')
+
+    // `42` starts at column 9 in `  return 42;` (0-indexed)
+    const originalReturnLine = 2
+    const originalReturnColumn = 9
+
+    const instrumentor = create([
+      {
+        channelName: 'fetch_sm',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ])
+    const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
+    const { code: generatedCode, map } = transformer.transform(originalCode, 'cjs')
+
+    expect(map).toBeTruthy()
+
+    const consumer = new SourceMapConsumer(JSON.parse(map))
+    const generatedLines = generatedCode.split('\n')
+
+    // Find the generated line containing `return 42` and the column of `42`
+    const generatedLine = generatedLines.findIndex(l => l.includes('return 42')) + 1
+    expect(generatedLine).toBeGreaterThan(0)
+    const generatedColumn = generatedLines[generatedLine - 1].indexOf('42')
+
+    const original = consumer.originalPositionFor({ line: generatedLine, column: generatedColumn })
+
+    expect(original.line).toBe(originalReturnLine)
+    expect(original.column).toBe(originalReturnColumn)
   })
 })
