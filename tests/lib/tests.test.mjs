@@ -12,7 +12,7 @@ const TEST_MODULE_VERSION = '0.0.1'
 const TEST_MODULE_PATH = 'index.mjs'
 const WINDOWS_MODULE_PATH = 'lib/index.mjs'
 
-function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH, dcModule } = {}) {
+function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH, dcModule, customTransforms = {} } = {}) {
   const ext = mjs ? 'mjs' : 'js'
   const testDir = join(__dirname, '..', testName)
 
@@ -22,6 +22,9 @@ function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH,
   if (existsSync(instrumentedMjs)) rmSync(instrumentedMjs)
 
   const instrumentor = create(configs, dcModule)
+  for (const [name, fn] of Object.entries(customTransforms)) {
+    instrumentor.addTransform(name, fn)
+  }
   const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, filePath)
 
   const code = readFileSync(join(testDir, `mod.${ext}`), 'utf-8')
@@ -409,5 +412,38 @@ describe('polyfill_mjs', () => {
         functionQuery: { functionName: 'fetch', kind: 'Async' },
       },
     ], { mjs: true, dcModule: './polyfill.js' })
+  })
+})
+
+describe('custom_transform_cjs', () => {
+  test('applies a custom transform registered via addTransform', () => {
+    runTest('custom_transform_cjs', [
+      {
+        channelName: 'fetch_custom',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Sync' },
+        transform: 'myCustomTransform',
+      },
+    ], {
+      customTransforms: {
+        myCustomTransform (_state, node) {
+          node.body.body.unshift({
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'AssignmentExpression',
+              operator: '=',
+              left: {
+                type: 'MemberExpression',
+                object: { type: 'Identifier', name: 'global' },
+                property: { type: 'Identifier', name: '__customCalled' },
+                computed: false,
+                optional: false,
+              },
+              right: { type: 'Literal', value: true, raw: 'true' },
+            },
+          })
+        },
+      },
+    })
   })
 })

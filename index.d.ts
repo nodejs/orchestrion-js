@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+import type { Node } from 'estree';
 /**
  * Create a new instrumentation matcher from an array of instrumentation configs.
  */
@@ -29,6 +30,12 @@ export type FunctionKind = "Sync" | "Async" | "AsyncIterator" | "Callback" | "It
 export type FunctionQuery = { className: string; methodName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean } | { className: string; privateMethodName: string; kind: FunctionKind; index?: number } | { className: string; index?: number; isExportAlias?: boolean } | { methodName: string; kind: FunctionKind; index?: number } | { functionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean } | { expressionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean };
 
 /**
+ * A custom transform function registered via `addTransform`.
+ * Receives the instrumentation state and the matched AST node.
+ */
+export type CustomTransform = (state: unknown, node: Node, parent: Node, ancestry: Node[]) => void;
+
+/**
  * Configuration for injecting instrumentation code
  */
 export interface InstrumentationConfig {
@@ -44,6 +51,11 @@ export interface InstrumentationConfig {
      * The function query to identify the function to instrument
      */
     functionQuery: FunctionQuery;
+    /**
+     * The name of a custom transform registered via `addTransform`.
+     * When set, takes precedence over `functionQuery.kind`.
+     */
+    transform?: string;
 }
 
 /**
@@ -80,6 +92,11 @@ export class InstrumentationMatcher {
    * Returns `undefined` if no matching instrumentations are found.
    */
   getTransformer(module_name: string, version: string, file_path: string): Transformer | undefined;
+  /**
+   * Register a custom transform function under the given name.
+   * The name can then be referenced via the `transform` option in an `InstrumentationConfig`.
+   */
+  addTransform(name: string, fn: CustomTransform): void;
 }
 /**
  * The Transformer is responsible for transforming JavaScript code.
