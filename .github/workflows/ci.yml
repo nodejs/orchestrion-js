@@ -10,6 +10,18 @@ env:
   CARGO_TERM_COLOR: always
   RUST_VERSION: 1.87.0
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - name: Install
+        run: npm install
+      - name: Run linter
+        run: npm run lint
+
   test:
     name: Test (${{ matrix.node-version }})
     strategy:

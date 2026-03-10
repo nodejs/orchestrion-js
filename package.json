@@ -20,12 +20,16 @@
     "build": "wasm-pack build --target nodejs --release -- --features wasm && yarn build:wrapper && yarn build:inline-binary",
     "build:wrapper": "tsc index.ts --declaration --module commonjs",
     "build:inline-binary": "node inline-binary.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "test": "vitest run",
     "test:update-snapshots": "vitest -u run",
     "test:watch": "vitest"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
+    "eslint": "^9.39.4",
+    "neostandard": "^0.13.0",
     "oxc-parser": "^0.117.0",
     "source-map": "^0.6.0",
     "typescript": "^5.8.3",
