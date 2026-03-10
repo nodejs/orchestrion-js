@@ -391,6 +391,19 @@ describe('var_named_class_export_alias_mjs', () => {
   })
 })
 
+describe('ast_query_cjs', () => {
+  test('instruments using a raw astQuery selector (cjs)', () => {
+    runTest('ast_query_cjs', [
+      {
+        channelName: 'fetch_ast_query',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        astQuery: 'FunctionDeclaration[id.name="fetch"][async]',
+        functionQuery: { kind: 'Async' },
+      },
+    ])
+  })
+})
+
 describe('polyfill_cjs', () => {
   test('instruments with a custom dc module (cjs)', () => {
     runTest('polyfill_cjs', [
