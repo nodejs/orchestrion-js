@@ -135,7 +135,7 @@ export class Up {
 
         const originalPosition = sourceMapConsumer.originalPositionFor({
             // This is the position of the fetch function in the transformed JavaScript
-            line: 35,
+            line: 36,
             column: 2,
         });
 

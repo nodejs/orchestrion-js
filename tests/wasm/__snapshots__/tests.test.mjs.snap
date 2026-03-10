@@ -8,6 +8,7 @@ const tr_ch_apm$up_asyncGet = tr_ch_apm_tracingChannel("orchestrion:one:up:async
 const tr_ch_apm$up_asyncFetch = tr_ch_apm_tracingChannel("orchestrion:one:up:asyncFetch");
 const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
+const tr_ch_apm_hasSubscribers = ch => ch.start.hasSubscribers || ch.end.hasSubscribers || ch.asyncStart.hasSubscribers || ch.asyncEnd.hasSubscribers || ch.error.hasSubscribers;
 module.exports = class Up {
   constructor() {
     const __apm$ctx = {
@@ -20,7 +21,7 @@ module.exports = class Up {
       };
       return __apm$wrapped(...arguments);
     };
-    if (!tr_ch_apm$up_constructor.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_constructor)) return __apm$traced();
     return tr_ch_apm$up_constructor.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -48,7 +49,7 @@ module.exports = class Up {
       };
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_fetch)) return __apm$traced();
     return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -74,7 +75,7 @@ module.exports = class Up {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_asyncFetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_asyncFetch)) return __apm$traced();
     return tr_ch_apm$up_asyncFetch.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -113,7 +114,7 @@ module.exports = class Up {
       const __apm$wrapped = function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_asyncGet.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_asyncGet)) return __apm$traced();
     return tr_ch_apm$up_asyncGet.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -152,7 +153,7 @@ module.exports = class Up {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_privateSend.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_privateSend)) return __apm$traced();
     return tr_ch_apm$up_privateSend.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -184,7 +185,7 @@ module.exports = class Up {
   async send() {}
 };
 ",
-  "map": "{"version":3,"sources":["one/index.js"],"names":["module","exports","constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;AAAAA,OAAOC,UAAU;EAChBC;;;;;;;QACCC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGNE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"one/index.js"}",
+  "map": "{"version":3,"sources":["one/index.js"],"names":["module","exports","constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;;AAAAA,OAAOC,UAAU;EAChBC;;;;;;;QACCC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGNE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"one/index.js"}",
 }
 `;
 
@@ -196,6 +197,7 @@ const tr_ch_apm$up_asyncGet = tr_ch_apm_tracingChannel("orchestrion:one:up:async
 const tr_ch_apm$up_asyncFetch = tr_ch_apm_tracingChannel("orchestrion:one:up:asyncFetch");
 const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
+const tr_ch_apm_hasSubscribers = ch => ch.start.hasSubscribers || ch.end.hasSubscribers || ch.asyncStart.hasSubscribers || ch.asyncEnd.hasSubscribers || ch.error.hasSubscribers;
 export class Up {
   constructor() {
     const __apm$ctx = {
@@ -208,7 +210,7 @@ export class Up {
       };
       return __apm$wrapped(...arguments);
     };
-    if (!tr_ch_apm$up_constructor.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_constructor)) return __apm$traced();
     return tr_ch_apm$up_constructor.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -236,7 +238,7 @@ export class Up {
       };
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_fetch)) return __apm$traced();
     return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -262,7 +264,7 @@ export class Up {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_asyncFetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_asyncFetch)) return __apm$traced();
     return tr_ch_apm$up_asyncFetch.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -301,7 +303,7 @@ export class Up {
       const __apm$wrapped = function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_asyncGet.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_asyncGet)) return __apm$traced();
     return tr_ch_apm$up_asyncGet.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -340,7 +342,7 @@ export class Up {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_privateSend.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_privateSend)) return __apm$traced();
     return tr_ch_apm$up_privateSend.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -372,7 +374,7 @@ export class Up {
   async send() {}
 }
 ",
-  "map": "{"version":3,"sources":["one/index.js"],"names":["constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;OAAO;EACNA;;;;;;;QACCC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGNE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"one/index.js"}",
+  "map": "{"version":3,"sources":["one/index.js"],"names":["constructor","console","log","fetch","asyncFetch","get","send"],"mappings":";;;;;;;OAAO;EACNA;;;;;;;QACCC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAGNE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"one/index.js"}",
 }
 `;
 
@@ -384,6 +386,7 @@ const tr_ch_apm$up_asyncGet = tr_ch_apm_tracingChannel("orchestrion:one:up:async
 const tr_ch_apm$up_asyncFetch = tr_ch_apm_tracingChannel("orchestrion:one:up:asyncFetch");
 const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
 const tr_ch_apm$up_constructor = tr_ch_apm_tracingChannel("orchestrion:one:up:constructor");
+const tr_ch_apm_hasSubscribers = ch => ch.start.hasSubscribers || ch.end.hasSubscribers || ch.asyncStart.hasSubscribers || ch.asyncEnd.hasSubscribers || ch.error.hasSubscribers;
 export class Up {
   constructor() {
     const __apm$ctx = {
@@ -396,7 +399,7 @@ export class Up {
       };
       return __apm$wrapped(...arguments);
     };
-    if (!tr_ch_apm$up_constructor.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_constructor)) return __apm$traced();
     return tr_ch_apm$up_constructor.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -424,7 +427,7 @@ export class Up {
       };
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_fetch)) return __apm$traced();
     return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -450,7 +453,7 @@ export class Up {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_asyncFetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_asyncFetch)) return __apm$traced();
     return tr_ch_apm$up_asyncFetch.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -489,7 +492,7 @@ export class Up {
       const __apm$wrapped = function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_asyncGet.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_asyncGet)) return __apm$traced();
     return tr_ch_apm$up_asyncGet.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -528,7 +531,7 @@ export class Up {
       const __apm$wrapped = async function () {};
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_privateSend.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_privateSend)) return __apm$traced();
     return tr_ch_apm$up_privateSend.start.runStores(__apm$ctx, () => {
       try {
         let promise = __apm$traced();
@@ -560,7 +563,7 @@ export class Up {
   async send() {}
 }
 ",
-  "map": "{"version":3,"sources":["module.js"],"names":["constructor","console","log","fetch","url","asyncFetch","get","send"],"mappings":";;;;;;OAAO;EACHA;;;;;;;QACIC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAEhBC,MAAMC;;;;;;;sCAAAA;QACFH,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAEVG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"module.js","sourceRoot":""}",
+  "map": "{"version":3,"sources":["module.js"],"names":["constructor","console","log","fetch","url","asyncFetch","get","send"],"mappings":";;;;;;;OAAO;EACHA;;;;;;;QACIC,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAEhBC,MAAMC;;;;;;;sCAAAA;QACFH,QAAQC,IAAI;;;;;;;;;;;;;;;;;;;;EAEVG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACNC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EACMC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;QACAA","file":"module.js","sourceRoot":""}",
 }
 `;
 
@@ -568,6 +571,7 @@ exports[`windows style paths > should transform ESM module correctly 1`] = `
 {
   "code": "import {tracingChannel as tr_ch_apm_tracingChannel} from "diagnostics_channel";
 const tr_ch_apm$up_fetch = tr_ch_apm_tracingChannel("orchestrion:one:up:fetch");
+const tr_ch_apm_hasSubscribers = ch => ch.start.hasSubscribers || ch.end.hasSubscribers || ch.asyncStart.hasSubscribers || ch.asyncEnd.hasSubscribers || ch.error.hasSubscribers;
 export class Up {
   constructor() {
     console.log('constructor');
@@ -584,7 +588,7 @@ export class Up {
       };
       return __apm$wrapped.apply(this, arguments);
     };
-    if (!tr_ch_apm$up_fetch.hasSubscribers) return __apm$traced();
+    if (!tr_ch_apm_hasSubscribers(tr_ch_apm$up_fetch)) return __apm$traced();
     return tr_ch_apm$up_fetch.start.runStores(__apm$ctx, () => {
       try {
         const result = __apm$traced();
@@ -602,6 +606,6 @@ export class Up {
   }
 }
 ",
-  "map": "{"version":3,"sources":["one/path/to/file.js"],"names":["constructor","console","log","fetch"],"mappings":";;OAAO;EACNA;IACCC,QAAQC,IAAI;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI","file":"one/path/to/file.js"}",
+  "map": "{"version":3,"sources":["one/path/to/file.js"],"names":["constructor","console","log","fetch"],"mappings":";;;OAAO;EACNA;IACCC,QAAQC,IAAI;;EAGbC;;;;;;;;QACCF,QAAQC,IAAI","file":"one/path/to/file.js"}",
 }
 `;

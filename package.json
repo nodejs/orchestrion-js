@@ -33,7 +33,7 @@
     "oxc-parser": "^0.117.0",
     "source-map": "^0.6.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4",
+    "vitest": "^2.1.8",
     "wasm-pack": "^0.13.1"
   },
   "volta": {
