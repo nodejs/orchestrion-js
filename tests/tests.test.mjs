@@ -1,4 +1,4 @@
-import { create } from '../../lib/index.js'
+import { create } from '../lib/index.js'
 import { describe, test, expect } from 'vitest'
 import { readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
@@ -15,7 +15,7 @@ const WINDOWS_MODULE_PATH = 'lib/index.mjs'
 
 function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH, dcModule, customTransforms = {} } = {}) {
   const ext = mjs ? 'mjs' : 'js'
-  const testDir = join(__dirname, '..', testName)
+  const testDir = join(__dirname, testName)
 
   const instrumentedJs = join(testDir, 'instrumented.js')
   const instrumentedMjs = join(testDir, 'instrumented.mjs')

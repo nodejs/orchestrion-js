@@ -27,14 +27,13 @@ Once you have some code ready, open a PR, [linking it to the issue](https://docs
 ```bash
 $ git clone git@github.com:nodejs/orchestrion-js.git
 $ cd orchestrion-js
-$ rustup install stable
-$ cargo check # or `cargo test`, etc.
+$ npm install
 ```
 
 ### Testing your changes
 
 ```bash
-cargo test
+npm test
 ```
 
 ## Contributing to issues

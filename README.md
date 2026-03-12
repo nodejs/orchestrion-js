@@ -3,7 +3,7 @@
 This is a library to aid in instrumenting Node.js libraries at build or load
 time.
 
-It uses SWC's Rust AST walker to inject code that calls Node.js
+It uses an AST walker to inject code that calls Node.js
 [`TracingChannel`](https://nodejs.org/api/diagnostics_channel.html#class-tracingchannel).
 
 You likely don't want to use this library directly; instead, consider using:
@@ -16,18 +16,7 @@ You likely don't want to use this library directly; instead, consider using:
 
 ## JavaScript
 
-`@apm-js-collab/code-transformer` exposes the Rust library as a WebAssembly
-module.
-
-### Building
-
-To build the JavaScript module:
-
-- Ensure you have [Rust installed](https://www.rust-lang.org/tools/install)
-- Install the wasm toolchain\
-  `rustup target add wasm32-unknown-unknown --toolchain stable`
-- Install dependencies and build the module\
-  `npm install && npm run build`
+`@apm-js-collab/code-transformer` exposes the library.
 
 ### Usage
 
@@ -70,10 +59,6 @@ if (transformer === undefined) {
 const inputCode = "async function fetch() { return 42; }";
 const result = transformer.transform(inputCode, "unknown");
 console.log(result.code);
-
-// Both the matcher and transformer should be freed after use!
-matcher.free();
-transformer.free();
 ```
 
 ### Export Aliases
@@ -156,18 +141,18 @@ type InstrumentationConfig = {
 ### Functions
 
 ```ts
-create(configs: InstrumentationConfig[], dc_module?: string | null): InstrumentationMatcher;
+create(configs: InstrumentationConfig[], dcModule?: string | null): InstrumentationMatcher;
 ```
 
 Create a matcher for one or more instrumentation configurations.
 
 - `configs` - Array of instrumentation configurations.
-- `dc_module` - Optional module to import `diagnostics_channel` API from.
+- `dcModule` - Optional module to import `diagnostics_channel` API from.
 
 #### **`InstrumentationMatcher`**
 
 ```ts
-getTransformer(module_name: string, version: string, file_path: string): Transformer | undefined;
+getTransformer(moduleName: string, version: string, filePath: string): Transformer | undefined;
 ```
 
 Gets a transformer for a specific module and file.
@@ -175,35 +160,23 @@ Gets a transformer for a specific module and file.
 Returns a `Transformer` for the given module, or `undefined` if there were no
 matching instrumentation configurations.
 
-- `module_name` - Name of the module.
+- `moduleName` - Name of the module.
 - `version` - Version of the module.
-- `file_path` - Relative Unix-style path to the file from the module root (e.g. `"lib/index.js"`). Windows-style backslash paths are also accepted and will be normalized automatically.
-
-```ts
-free(): void;
-```
-
-Free the matcher memory when it's no longer needed.
+- `filePath` - Relative Unix-style path to the file from the module root (e.g. `"lib/index.js"`). Windows-style backslash paths are also accepted and will be normalized automatically.
 
 #### **`Transformer`**
 
 ```ts
-transform(code: string, module_type: ModuleType, sourcemap?: string | undefined): TransformOutput;
+transform(code: string, moduleType: ModuleType, sourcemap?: string | undefined): TransformOutput;
 ```
 
 Transforms the code, injecting tracing as configured.
 
 Returns `{ code, map }`. `map` will be undefined if no sourcemap was supplied.
 
-- `code` - The JavaScript/TypeScript code to transform.
-- `module_type` - The type of module being transformed.
+- `code` - The JavaScript code to transform.
+- `moduleType` - The type of module being transformed.
 - `sourcemap` - Optional existing source map for the code.
-
-```ts
-free(): void;
-```
-
-Free the transformer memory when it's no longer needed.
 
 ## License
 
