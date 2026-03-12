@@ -22,7 +22,7 @@ export interface TransformOutput {
 /**
  * The kind of function
  */
-export type FunctionKind = "Sync" | "Async" | "AsyncIterator" | "Callback" | "Iterator";
+export type FunctionKind = "Sync" | "Async" | "Callback";
 
 /**
  * Describes which function to instrument
@@ -91,7 +91,7 @@ export class InstrumentationMatcher {
    * Get a transformer for the given module name, version and file path.
    * Returns `undefined` if no matching instrumentations are found.
    */
-  getTransformer(module_name: string, version: string, file_path: string): Transformer | undefined;
+  getTransformer(moduleName: string, version: string, filePath: string): Transformer | undefined;
   /**
    * Register a custom transform function under the given name.
    * The name can then be referenced via the `transform` option in an `InstrumentationConfig`.
@@ -110,5 +110,5 @@ export class Transformer {
    * # Errors
    * Returns an error if the transformation fails to find injection points.
    */
-  transform(code: string, module_type: ModuleType, sourcemap?: string | null): TransformOutput;
+  transform(code: string, moduleType: ModuleType, sourcemap?: string | null): TransformOutput;
 }
