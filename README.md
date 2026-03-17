@@ -167,7 +167,7 @@ matching instrumentation configurations.
 #### **`Transformer`**
 
 ```ts
-transform(code: string, moduleType: ModuleType, sourcemap?: string | undefined): TransformOutput;
+transform(code: string | Buffer, moduleType: ModuleType, sourcemap?: string | undefined): TransformOutput;
 ```
 
 Transforms the code, injecting tracing as configured.

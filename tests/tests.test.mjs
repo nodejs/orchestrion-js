@@ -438,6 +438,33 @@ describe('custom_transform_cjs', () => {
   })
 })
 
+describe('buffer_input', () => {
+  test('accepts a Buffer and produces the same output as a string', () => {
+    const code = [
+      'async function fetch (url) {',
+      '  return 42;',
+      '}',
+      'module.exports = { fetch };',
+    ].join('\n')
+
+    const configs = [
+      {
+        channelName: 'fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ]
+
+    const instrumentor = create(configs)
+    const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
+
+    const fromString = transformer.transform(code, 'cjs')
+    const fromBuffer = transformer.transform(Buffer.from(code), 'cjs')
+
+    expect(fromBuffer.code).toBe(fromString.code)
+  })
+})
+
 describe('source_map', () => {
   test('maps generated positions back to original line/column', () => {
     const originalCode = [
