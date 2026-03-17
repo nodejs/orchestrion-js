@@ -7,10 +7,9 @@
     "url": "https://github.com/nodejs/orchestrion-js.git"
   },
   "files": [
-    "./pkg/orchestrion_js.js",
-    "./pkg/orchestrion_js.d.ts",
     "./index.js",
     "./index.d.ts",
+    "./lib/**/*.js",
     "LICENSE",
     "NOTICE"
   ],
