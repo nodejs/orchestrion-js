@@ -16,13 +16,9 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "build": "wasm-pack build --target nodejs --release -- --features wasm && yarn build:wrapper && yarn build:inline-binary",
-    "build:wrapper": "tsc index.ts --declaration --module commonjs",
-    "build:inline-binary": "node inline-binary.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "vitest run",
-    "test:update-snapshots": "vitest -u run",
     "test:watch": "vitest"
   },
   "devDependencies": {
@@ -31,8 +27,7 @@
     "neostandard": "^0.13.0",
     "source-map": "^0.6.0",
     "typescript": "^5.8.3",
-    "vitest": "^2.1.8",
-    "wasm-pack": "^0.13.1"
+    "vitest": "^2.1.8"
   },
   "volta": {
     "node": "22.15.0"
