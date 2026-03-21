@@ -99,23 +99,23 @@ type FunctionKind = "Sync" | "Async";
 ```ts
 type FunctionQuery =
     | // Match class constructor
-    { className: string; index?: number; isExportAlias?: boolean }
+    { className: string; index?: number | null; isExportAlias?: boolean }
     | // Match class method
     {
         className: string;
         methodName: string;
         kind: FunctionKind;
-        index?: number;
+        index?: number | null;
         isExportAlias?: boolean;
     }
     | // Match method on objects
-    { methodName: string; kind: FunctionKind; index?: number }
+    { methodName: string; kind: FunctionKind; index?: number | null }
     | // Match standalone function
-    { functionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean }
+    { functionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean }
     | // Match arrow function or function expression
-    { expressionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean };
+    { expressionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean };
     | // Match private class methods
-    { className: string; privateMethodName: string; kind: FunctionKind; index?: number };
+    { className: string; privateMethodName: string; kind: FunctionKind; index?: number | null };
 ```
 
 #### **`ModuleMatcher`**

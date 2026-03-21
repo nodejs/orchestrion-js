@@ -27,7 +27,7 @@ export type FunctionKind = "Sync" | "Async" | "Callback";
 /**
  * Describes which function to instrument
  */
-export type FunctionQuery = { className: string; methodName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean } | { className: string; privateMethodName: string; kind: FunctionKind; index?: number } | { className: string; index?: number; isExportAlias?: boolean } | { methodName: string; kind: FunctionKind; index?: number } | { functionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean } | { expressionName: string; kind: FunctionKind; index?: number; isExportAlias?: boolean };
+export type FunctionQuery = { className: string; methodName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean } | { className: string; privateMethodName: string; kind: FunctionKind; index?: number | null } | { className: string; index?: number | null; isExportAlias?: boolean } | { methodName: string; kind: FunctionKind; index?: number | null } | { functionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean } | { expressionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean };
 
 /**
  * A custom transform function registered via `addTransform`.
