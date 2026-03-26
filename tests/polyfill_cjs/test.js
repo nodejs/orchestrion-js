@@ -4,7 +4,7 @@
  **/
 const { fetch } = require('./instrumented.js');
 const { assert, getContext } = require('../common/preamble.js');
-const { tracingChannel } = require('diagnostics_channel');
+const { tracingChannel } = require('node:diagnostics_channel');
 const context = getContext('orchestrion:undici:fetch_decl');
 (async () => {
   const result = await fetch('https://example.com');

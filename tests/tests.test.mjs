@@ -1,5 +1,6 @@
 import { create } from '../lib/index.js'
-import { describe, test, expect } from 'vitest'
+import { describe, test } from 'node:test'
+import assert from 'node:assert'
 import { readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { join, dirname } from 'node:path'
@@ -43,7 +44,7 @@ function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH,
     const output = (result.stdout?.toString() || '') + (result.stderr?.toString() || '')
     throw new Error(`node test.${ext} exited with ${result.status}:\n${output}`)
   }
-  expect(result.status).toBe(0)
+  assert.equal(result.status, 0)
 }
 
 describe('arguments_mutation', () => {
@@ -461,7 +462,7 @@ describe('buffer_input', () => {
     const fromString = transformer.transform(code, 'cjs')
     const fromBuffer = transformer.transform(Buffer.from(code), 'cjs')
 
-    expect(fromBuffer.code).toBe(fromString.code)
+    assert.equal(fromBuffer.code, fromString.code)
   })
 })
 
@@ -488,19 +489,19 @@ describe('source_map', () => {
     const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
     const { code: generatedCode, map } = transformer.transform(originalCode, 'cjs')
 
-    expect(map).toBeTruthy()
+    assert.ok(map)
 
     const consumer = new SourceMapConsumer(JSON.parse(map))
     const generatedLines = generatedCode.split('\n')
 
     // Find the generated line containing `return 42` and the column of `42`
     const generatedLine = generatedLines.findIndex(l => l.includes('return 42')) + 1
-    expect(generatedLine).toBeGreaterThan(0)
+    assert.equal(generatedLine > 0, true)
     const generatedColumn = generatedLines[generatedLine - 1].indexOf('42')
 
     const original = consumer.originalPositionFor({ line: generatedLine, column: generatedColumn })
 
-    expect(original.line).toBe(originalReturnLine)
-    expect(original.column).toBe(originalReturnColumn)
+    assert.equal(original.line, originalReturnLine)
+    assert.equal(original.column, originalReturnColumn)
   })
 })

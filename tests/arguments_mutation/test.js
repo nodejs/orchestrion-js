@@ -3,8 +3,8 @@
  * This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2025 Datadog, Inc.
  **/
 const { fetch_simple, fetch_complex } = require('./instrumented.js');
-const assert = require('assert');
-const { tracingChannel } = require('diagnostics_channel');
+const assert = require('node:assert');
+const { tracingChannel } = require('node:diagnostics_channel');
 
 const handler = {
   start (message) {
