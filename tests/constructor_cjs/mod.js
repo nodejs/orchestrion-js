@@ -3,15 +3,16 @@
  * This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2025 Datadog, Inc.
  **/
 class UndiciBase {
-    constructor () {
-    }
+  constructor () {
+    this.val = undefined
+  }
 }
 
 class Undici extends UndiciBase {
-    constructor (val) {
-        super();
-        this.val = val;
-    }
+  constructor (val) {
+    super()
+    this.val = val
+  }
 }
 
-module.exports = Undici;
+module.exports = Undici

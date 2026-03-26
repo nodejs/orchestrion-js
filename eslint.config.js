@@ -3,8 +3,17 @@
 module.exports = [
   {
     ignores: [
-      'tests/**/*' // TODO: Also lint tests
+      'tests/**/*instrumented.js',
+      'tests/**/*instrumented.mjs'
     ]
   },
-  ...require('neostandard')({})
+
+  ...require('neostandard')({}),
+
+  {
+    files: ['tests/**/*'],
+    rules: {
+      camelcase: 'off'
+    }
+  }
 ]

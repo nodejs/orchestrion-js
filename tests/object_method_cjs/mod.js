@@ -3,9 +3,9 @@
  * This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2025 Datadog, Inc.
  **/
 const undici = {
-    async fetch (url) {
-        return 42;
-    }
+  async fetch (url) {
+    return 42
+  }
 }
 
-module.exports = undici;
+module.exports = undici

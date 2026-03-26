@@ -1,7 +1,7 @@
-function fetch(url, callback) {
+function fetch (url, callback) {
   process.nextTick(() => {
-    callback(null, 42);
+    callback(null, 42)
   })
 }
 
-module.exports = { fetch };
+module.exports = { fetch }

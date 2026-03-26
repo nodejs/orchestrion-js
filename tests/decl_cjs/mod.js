@@ -3,7 +3,7 @@
  * This product includes software developed at Datadog (https://www.datadoghq.com/). Copyright 2025 Datadog, Inc.
  **/
 async function fetch (url) {
-  return 42;
+  return 42
 }
 
-module.exports = { fetch };
+module.exports = { fetch }
