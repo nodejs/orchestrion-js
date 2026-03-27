@@ -33,5 +33,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: 'package.json'
+      # Install latest npm cli so we can publish via OIDC
+      - run: npm install -g npm@latest
       - run: npm install
       - run: npm publish --access public
