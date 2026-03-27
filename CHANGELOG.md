@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.11.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.10.0...code-transformer-v0.11.0) (2026-03-27)
+
+
+### Features
+
+* Rewrite orchestrion in javascript ([#41](https://github.com/nodejs/orchestrion-js/issues/41)) ([2069006](https://github.com/nodejs/orchestrion-js/commit/2069006efd6f1d31ae44f77c4c7eb1e69a73f945))
+
+
+### Bug Fixes
+
+* Fixed `tracePromise` to handle returning result when function being wrapped is not a promise ([#46](https://github.com/nodejs/orchestrion-js/issues/46)) ([e864993](https://github.com/nodejs/orchestrion-js/commit/e864993c60f4915c3806cd4b2691b19658aef05b))
+* Updated regular expression for creating the tracing channel variable ([#45](https://github.com/nodejs/orchestrion-js/issues/45)) ([fc0aaa1](https://github.com/nodejs/orchestrion-js/commit/fc0aaa14a5f1c87df0f7e08ee251701b2d9ada89))
+
 ## [0.10.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.9.0...code-transformer-v0.10.0) (2026-03-06)
 
 
