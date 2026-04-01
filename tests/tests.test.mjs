@@ -518,6 +518,18 @@ describe('wrap_promise_non_promise', () => {
   })
 })
 
+describe('promise_subclass', () => {
+  test('instruments async function and preserves original Promise subclass return type', () => {
+    runTest('promise_subclass', [
+      {
+        channelName: 'fetch_subclass',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' }
+      }
+    ])
+  })
+})
+
 describe('IIFE with class', () => {
   test('instruments a class within a IIFE, variable same name as class', () => {
     runTest('iife_nested_class', [
