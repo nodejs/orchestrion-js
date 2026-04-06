@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.12.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.11.0...code-transformer-v0.12.0) (2026-04-06)
+
+
+### Features
+
+* **transformer:** add objectName+propertyName selector to #fromFunctionQuery ([#58](https://github.com/nodejs/orchestrion-js/issues/58)) ([3f0e14d](https://github.com/nodejs/orchestrion-js/commit/3f0e14dc7ea3ff6d022918d67f865f801532502a))
+
+
+### Bug Fixes
+
+* Preserve Promise subclass return values in wrapPromise ([#57](https://github.com/nodejs/orchestrion-js/issues/57)) ([d59a4e6](https://github.com/nodejs/orchestrion-js/commit/d59a4e60c068cdb95c8d2a71b76f61ce6112b53a))
+* Updated `Transformer.#visit` to skip visiting VariableDeclarator nodes ([#55](https://github.com/nodejs/orchestrion-js/issues/55)) ([b494f56](https://github.com/nodejs/orchestrion-js/commit/b494f56c57ec33c6ad1995da54a880dec7415d71))
+
 ## [0.11.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.10.0...code-transformer-v0.11.0) (2026-03-27)
 
 
