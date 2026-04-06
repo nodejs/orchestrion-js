@@ -529,3 +529,27 @@ describe('IIFE with class', () => {
     ])
   })
 })
+
+describe('object_property_this_cjs', () => {
+  test('instruments async arrow function assigned to this inside a function constructor', () => {
+    runTest('object_property_this_cjs', [
+      {
+        channelName: 'Connection_query',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'this', propertyName: '_query', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('object_property_named_cjs', () => {
+  test('instruments async arrow function assigned to a named identifier property', () => {
+    runTest('object_property_named_cjs', [
+      {
+        channelName: 'conn_query',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'conn', propertyName: 'query', kind: 'Async' },
+      },
+    ])
+  })
+})
