@@ -565,3 +565,27 @@ describe('object_property_named_cjs', () => {
     ])
   })
 })
+
+describe('arrow_expr_args_cjs', () => {
+  test('correctly forwards call-site arguments when wrapping an arrow function via expressionName', () => {
+    runTest('arrow_expr_args_cjs', [
+      {
+        channelName: 'fetch_arrow_args',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { expressionName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('arrow_this_property_args_cjs', () => {
+  test('correctly forwards call-site arguments when wrapping a this-assigned arrow function', () => {
+    runTest('arrow_this_property_args_cjs', [
+      {
+        channelName: 'Connection_query_args',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'this', propertyName: '_query', kind: 'Async' },
+      },
+    ])
+  })
+})
