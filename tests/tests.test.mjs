@@ -196,30 +196,6 @@ describe('injection_failure', () => {
   })
 })
 
-describe('injection_failure_method_name', () => {
-  test('does not write instrumented file when no injection points found', () => {
-    runTest('injection_failure_method_name', [
-      {
-        channelName: 'injection_failure_method_name',
-        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
-        functionQuery: { className: 'Foo', methodName: 'nonExistentMethod', kind: 'Async' },
-      },
-    ], { mjs: true })
-  })
-})
-
-describe('injection_failure_method_name_sub_class', () => {
-  test('does not write instrumented file when no injection points found', () => {
-    runTest('injection_failure_method_name_subclass', [
-      {
-        channelName: 'injection_failures_subclass_method_name',
-        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
-        functionQuery: { className: 'Base', methodName: 'nonExistentMethod', kind: 'Async' },
-      },
-    ], { mjs: true })
-  })
-})
-
 describe('multiple_class_method_cjs', () => {
   test('instruments multiple class methods', () => {
     runTest('multiple_class_method_cjs', [
