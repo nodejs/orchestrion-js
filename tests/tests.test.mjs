@@ -589,3 +589,15 @@ describe('arrow_this_property_args_cjs', () => {
     ])
   })
 })
+
+describe('arrow_this_binding_cjs', () => {
+  test('preserves lexical this and call-site arguments in wrapped arrow function', () => {
+    runTest('arrow_this_binding_cjs', [
+      {
+        channelName: 'Connection_query_this',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'this', propertyName: '_query', kind: 'Async' },
+      },
+    ])
+  })
+})
