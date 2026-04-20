@@ -22,7 +22,7 @@ export interface TransformOutput {
 /**
  * The kind of function
  */
-export type FunctionKind = "Sync" | "Async" | "Callback";
+export type FunctionKind = "Sync" | "Async" | "Callback" | "Auto";
 
 /**
  * Describes which function to instrument

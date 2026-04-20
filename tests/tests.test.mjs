@@ -297,6 +297,18 @@ describe('callback_cjs', () => {
   })
 })
 
+describe('callback_promise_sync_cjs', () => {
+  test('instruments function covering callback, promise, and sync paths', () => {
+    runTest('callback_promise_sync_cjs', [
+      {
+        channelName: 'fetch.auto',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Auto' },
+      },
+    ])
+  })
+})
+
 describe('instance_method_subclass_cjs', () => {
   test('instruments inherited method via constructor patching on subclass', () => {
     runTest('instance_method_subclass_cjs', [
