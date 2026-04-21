@@ -1,4 +1,4 @@
-const { Undici } = require('./instrumented.js')
+const { Undici } = require('./subclass.js')
 const { assert, getContext } = require('../common/preamble.js')
 const { tracingChannel } = require('node:diagnostics_channel')
 
