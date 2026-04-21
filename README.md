@@ -91,7 +91,7 @@ This also works for class exports (e.g., `export { MyClass as PublicClass }`).
 
 ```ts
 type ModuleType = "esm" | "cjs" | "unknown";
-type FunctionKind = "Sync" | "Async";
+type FunctionKind = "Sync" | "Async" | "Callback" | "Auto";
 ```
 
 #### **`FunctionQuery` Variants**
@@ -106,16 +106,17 @@ type FunctionQuery =
         methodName: string;
         kind: FunctionKind;
         index?: number | null;
+        callbackIndex?: number;
         isExportAlias?: boolean;
     }
     | // Match method on objects
-    { methodName: string; kind: FunctionKind; index?: number | null }
+    { methodName: string; kind: FunctionKind; index?: number | null; callbackIndex?: number }
     | // Match standalone function
-    { functionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean }
+    { functionName: string; kind: FunctionKind; index?: number | null; callbackIndex?: number; isExportAlias?: boolean }
     | // Match arrow function or function expression
-    { expressionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean };
+    { expressionName: string; kind: FunctionKind; index?: number | null; callbackIndex?: number; isExportAlias?: boolean };
     | // Match private class methods
-    { className: string; privateMethodName: string; kind: FunctionKind; index?: number | null };
+    { className: string; privateMethodName: string; kind: FunctionKind; index?: number | null; callbackIndex?: number };
 ```
 
 #### **`ModuleMatcher`**
