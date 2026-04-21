@@ -625,3 +625,27 @@ describe('arrow_this_binding_cjs', () => {
     ])
   })
 })
+
+describe('iterator_cjs', () => {
+  test('instruments sync generator function', () => {
+    runTest('iterator_cjs', [
+      {
+        channelName: 'generate',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generate', kind: 'Sync', returnKind: 'Iterator' },
+      },
+    ])
+  })
+})
+
+describe('async_iterator_cjs', () => {
+  test('instruments async generator function', () => {
+    runTest('async_iterator_cjs', [
+      {
+        channelName: 'generate',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generate', kind: 'Sync', returnKind: 'AsyncIterator' },
+      },
+    ])
+  })
+})

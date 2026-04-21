@@ -20,14 +20,20 @@ export interface TransformOutput {
 }
 
 /**
- * The kind of function
+ * The kind of function — how the function resolves
  */
 export type FunctionKind = "Sync" | "Async" | "Callback";
 
 /**
+ * The return kind — what the function returns.
+ * When not set, the function is assumed to return a primitive value.
+ */
+export type ReturnKind = "Iterator" | "AsyncIterator";
+
+/**
  * Describes which function to instrument
  */
-export type FunctionQuery = { className: string; methodName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean } | { className: string; privateMethodName: string; kind: FunctionKind; index?: number | null } | { className: string; index?: number | null; isExportAlias?: boolean } | { methodName: string; kind: FunctionKind; index?: number | null } | { functionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean } | { expressionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean };
+export type FunctionQuery = { className: string; methodName: string; kind: FunctionKind; returnKind?: ReturnKind; index?: number | null; isExportAlias?: boolean } | { className: string; privateMethodName: string; kind: FunctionKind; returnKind?: ReturnKind; index?: number | null } | { className: string; returnKind?: ReturnKind; index?: number | null; isExportAlias?: boolean } | { methodName: string; kind: FunctionKind; returnKind?: ReturnKind; index?: number | null } | { functionName: string; kind: FunctionKind; returnKind?: ReturnKind; index?: number | null; isExportAlias?: boolean } | { expressionName: string; kind: FunctionKind; returnKind?: ReturnKind; index?: number | null; isExportAlias?: boolean };
 
 /**
  * A custom transform function registered via `addTransform`.
