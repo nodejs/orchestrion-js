@@ -651,6 +651,21 @@ describe('iterator_cjs', () => {
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
         functionQuery: { functionName: 'generate', kind: 'Sync', returnKind: 'Iterator' },
       },
+      {
+        channelName: 'generate_iter_async',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generateFromPromise', kind: 'Async', returnKind: 'Iterator' },
+      },
+      {
+        channelName: 'generate_iter_cb',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generateCallback', kind: 'Callback', returnKind: 'Iterator' },
+      },
+      {
+        channelName: 'generate_iter_auto',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generateAuto', kind: 'Auto', returnKind: 'Iterator' },
+      },
     ])
   })
 })
@@ -662,6 +677,11 @@ describe('async_iterator_cjs', () => {
         channelName: 'generate_async_iter',
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
         functionQuery: { functionName: 'generate', kind: 'Sync', returnKind: 'AsyncIterator' },
+      },
+      {
+        channelName: 'generate_async_iter_async',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generateFromPromise', kind: 'Async', returnKind: 'AsyncIterator' },
       },
     ])
   })

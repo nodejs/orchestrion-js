@@ -1,9 +1,18 @@
 'use strict'
 
-async function* generate (values) {
+async function * generate (values) {
   for (const value of values) {
     yield value
   }
 }
 
-module.exports = { generate }
+async function generateFromPromise (values) {
+  async function * gen () {
+    for (const value of values) {
+      yield value
+    }
+  }
+  return gen()
+}
+
+module.exports = { generate, generateFromPromise }
