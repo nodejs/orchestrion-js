@@ -638,6 +638,30 @@ describe('arrow_arguments_cjs', () => {
         channelName: 'Connection_fetchFunction',
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
         functionQuery: { objectName: 'this', propertyName: 'fetchFunction', kind: 'Async' },
+      }
+    ])
+  })
+})
+
+describe('iterator_cjs', () => {
+  test('instruments sync generator and patches next/throw/return on the returned iterator', () => {
+    runTest('iterator_cjs', [
+      {
+        channelName: 'generate_iter',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generate', kind: 'Sync', returnKind: 'Iterator' },
+      },
+    ])
+  })
+})
+
+describe('async_iterator_cjs', () => {
+  test('instruments async generator and patches next/throw/return on the returned async iterator', () => {
+    runTest('async_iterator_cjs', [
+      {
+        channelName: 'generate_async_iter',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'generate', kind: 'Sync', returnKind: 'AsyncIterator' },
       },
     ])
   })
