@@ -5,12 +5,14 @@
 // inside it refers to the constructor's argument count (2), not the call-site
 // count (1). The regular function binds its own `arguments`, so it sees the
 // call-site count (1). Instrumentation must not change either binding.
+// Both functions declare extra parameters to ensure parameter count does not
+// affect the reported arguments length.
 function Connection (host, port) {
-  this.fetchArrow = async (sql) => {
+  this.fetchArrow = async (sql, extra1, extra2) => {
     return arguments.length
   }
 
-  this.fetchFunction = async function (sql) {
+  this.fetchFunction = async function (sql, extra1, extra2) {
     return arguments.length
   }
 }
