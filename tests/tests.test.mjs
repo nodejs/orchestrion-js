@@ -64,6 +64,18 @@ describe('arguments_mutation', () => {
   })
 })
 
+describe('arguments_length_dispatch_cjs', () => {
+  test('preserves caller arity inside wrapped function that dispatches on arguments.length', () => {
+    runTest('arguments_length_dispatch_cjs', [
+      {
+        channelName: 'execute',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'execute', kind: 'Sync' },
+      },
+    ])
+  })
+})
+
 describe('class_expression_cjs', () => {
   test('instruments async class method on class expression', () => {
     runTest('class_expression_cjs', [
