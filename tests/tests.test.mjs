@@ -566,6 +566,18 @@ describe('object_property_this_cjs', () => {
   })
 })
 
+describe('object_property_this_generator_cjs', () => {
+  test('instruments generator function assigned to this inside a function constructor', () => {
+    runTest('object_property_this_generator_cjs', [
+      {
+        channelName: 'Connection_generate',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'this', propertyName: 'generate', kind: 'Sync' },
+      },
+    ])
+  })
+})
+
 describe('object_property_named_cjs', () => {
   test('instruments async arrow function assigned to a named identifier property', () => {
     runTest('object_property_named_cjs', [
@@ -609,6 +621,23 @@ describe('arrow_this_binding_cjs', () => {
         channelName: 'Connection_query_this',
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
         functionQuery: { objectName: 'this', propertyName: '_query', kind: 'Async' },
+      },
+    ])
+  })
+})
+
+describe('arrow_arguments_cjs', () => {
+  test('arrow keeps outer arguments binding while regular function sees call-site arguments', () => {
+    runTest('arrow_arguments_cjs', [
+      {
+        channelName: 'Connection_fetchArrow',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'this', propertyName: 'fetchArrow', kind: 'Async' },
+      },
+      {
+        channelName: 'Connection_fetchFunction',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { objectName: 'this', propertyName: 'fetchFunction', kind: 'Async' },
       },
     ])
   })
