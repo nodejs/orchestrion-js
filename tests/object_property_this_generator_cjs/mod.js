@@ -1,7 +1,7 @@
 'use strict'
 
 function Connection () {
-  this.generate = function* () {
+  this.generate = function * () {
     yield 1
     yield 2
     yield 3
