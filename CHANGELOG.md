@@ -5,12 +5,14 @@
 
 ### Features
 
-* add return kind option to support iterators ([#67](https://github.com/nodejs/orchestrion-js/issues/67)) ([4e77ee5](https://github.com/nodejs/orchestrion-js/commit/4e77ee5fedecf5c0207cbe66f0e1257812ddc91d))
+* Add return kind option to support iterators ([#67](https://github.com/nodejs/orchestrion-js/issues/67)) ([4e77ee5](https://github.com/nodejs/orchestrion-js/commit/4e77ee5fedecf5c0207cbe66f0e1257812ddc91d))
+* Add auto function kind for dynamic return value mechanisms ([#64](https://github.com/nodejs/orchestrion-js/pull/64)) ([0a67e16](https://github.com/nodejs/orchestrion-js/commit/0a67e1604779798bf540f5ae3e0da20e7dc9140d))
+* Convert ArrowFunctionExpression to FunctionExpression in traceFunction ([#60](https://github.com/nodejs/orchestrion-js/pull/60)) ([d8290b5](https://github.com/nodejs/orchestrion-js/commit/d8290b5af97bac24c4048b710e826fc5c88cc209))
 
 
 ### Bug Fixes
 
-* Updated transformer to prevent instrumenting a non-existent method on a class ([#59](https://github.com/nodejs/orchestrion-js/issues/59)) ([661eb1a](https://github.com/nodejs/orchestrion-js/commit/661eb1ac874a98ea75f883bb2217033ebef98eb5))
+* Fix incorrect function type breaking arg length and generators ([#70](https://github.com/nodejs/orchestrion-js/pull/70)) ([24f2e4c](https://github.com/nodejs/orchestrion-js/commit/24f2e4cb7abff1808f762159c8b2edb556d25b54))
 
 ## [0.12.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.11.0...code-transformer-v0.12.0) (2026-04-06)
 
