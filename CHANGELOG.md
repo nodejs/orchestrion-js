@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.12.0...code-transformer-v0.13.0) (2026-04-29)
+
+
+### Features
+
+* add return kind option to support iterators ([#67](https://github.com/nodejs/orchestrion-js/issues/67)) ([4e77ee5](https://github.com/nodejs/orchestrion-js/commit/4e77ee5fedecf5c0207cbe66f0e1257812ddc91d))
+
+
+### Bug Fixes
+
+* Updated transformer to prevent instrumenting a non-existent method on a class ([#59](https://github.com/nodejs/orchestrion-js/issues/59)) ([661eb1a](https://github.com/nodejs/orchestrion-js/commit/661eb1ac874a98ea75f883bb2217033ebef98eb5))
+
 ## [0.12.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.11.0...code-transformer-v0.12.0) (2026-04-06)
 
 
