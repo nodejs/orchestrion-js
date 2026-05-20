@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
+    "@types/estree": "^1.0.8",
     "eslint": "^9.39.4",
     "neostandard": "^0.13.0",
     "typescript": "^5.8.3"
@@ -31,7 +32,6 @@
     "node": "22.15.0"
   },
   "dependencies": {
-    "@types/estree": "^1.0.8",
     "astring": "^1.9.0",
     "esquery": "^1.7.0",
     "meriyah": "^6.1.4",
