@@ -13,6 +13,7 @@ const TEST_MODULE_NAME = 'undici'
 const TEST_MODULE_VERSION = '0.0.1'
 const TEST_MODULE_PATH = 'index.mjs'
 const WINDOWS_MODULE_PATH = 'lib/index.mjs'
+const WINDOWS_MODULE_REGEX = /lib\/index\.m?js/
 
 function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH, dcModule, customTransforms = {} } = {}) {
   const ext = mjs ? 'mjs' : 'js'
@@ -303,6 +304,18 @@ describe('windows_path', () => {
       {
         channelName: 'fetch_decl',
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: WINDOWS_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Async' },
+      },
+    ], { filePath: 'lib\\index.mjs' })
+  })
+})
+
+describe('windows_path_regex', () => {
+  test('instruments with windows-style file path matching regex', () => {
+    runTest('windows_path', [
+      {
+        channelName: 'fetch_decl',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: WINDOWS_MODULE_REGEX },
         functionQuery: { functionName: 'fetch', kind: 'Async' },
       },
     ], { filePath: 'lib\\index.mjs' })

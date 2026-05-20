@@ -73,7 +73,7 @@ export interface ModuleMatcher {
     /**
      * The path of the file you want to match from the module root
      */
-    filePath: string;
+    filePath: string | RegExp;
 }
 
 /**
