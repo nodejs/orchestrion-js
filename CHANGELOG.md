@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.13.0...code-transformer-v0.14.0) (2026-05-26)
+
+
+### Features
+
+* Expose Transformer `moduleName` and `filePath` ([#74](https://github.com/nodejs/orchestrion-js/issues/74)) ([954539b](https://github.com/nodejs/orchestrion-js/commit/954539bb3d18ea8a857be0a5227c7ae10294422e))
+
 ## [0.13.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.12.0...code-transformer-v0.13.0) (2026-04-29)
 
 
