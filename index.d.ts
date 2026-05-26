@@ -104,6 +104,12 @@ export class InstrumentationMatcher {
 export class Transformer {
   private constructor();
   free(): void;
+
+  /**
+   * The name of the module to transform.
+   */
+  get moduleName(): string;
+
   /**
    * Transform JavaScript code and optionally sourcemap.
    *
