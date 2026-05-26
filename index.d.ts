@@ -111,6 +111,13 @@ export class Transformer {
   get moduleName(): string;
 
   /**
+   * The relative file path within the npm package being instrumented.
+   *
+   * @returns {string}
+   */
+  get filePath(): string;
+
+  /**
    * Transform JavaScript code and optionally sourcemap.
    *
    * # Errors
