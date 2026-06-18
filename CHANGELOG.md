@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.14.0...code-transformer-v0.15.0) (2026-06-18)
+
+
+### Features
+
+* Add a cli tool to assist with testing configurations ([#68](https://github.com/nodejs/orchestrion-js/issues/68)) ([0743fe1](https://github.com/nodejs/orchestrion-js/commit/0743fe1acb9491484f39cfa58f0f765092318e2f))
+
+
+### Bug Fixes
+
+* Pass through sourcemaps ([#76](https://github.com/nodejs/orchestrion-js/issues/76)) ([082458b](https://github.com/nodejs/orchestrion-js/commit/082458b078b1fe0e6ca1c1ffae6816d0f260a1db))
+
 ## [0.14.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.13.0...code-transformer-v0.14.0) (2026-05-26)
 
 
