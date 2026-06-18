@@ -9,10 +9,14 @@
   "files": [
     "./index.js",
     "./index.d.ts",
+    "./cli.js",
     "./lib/**/*.js",
     "LICENSE",
     "NOTICE"
   ],
+  "bin": {
+    "code-transformer": "./cli.js"
+  },
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {

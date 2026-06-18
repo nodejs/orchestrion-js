@@ -179,6 +179,62 @@ Returns `{ code, map }`. `map` will be undefined if no sourcemap was supplied.
 - `moduleType` - The type of module being transformed.
 - `sourcemap` - Optional existing source map for the code.
 
+## CLI Tool
+
+The package includes a CLI tool for applying transformations to source files:
+
+```bash
+npx @apm-js-collab/code-transformer transformer.js source-file.js
+```
+
+### CLI Usage
+
+The CLI tool takes two arguments:
+1. `transformer.js` - A file that exports instrumentation configuration(s)
+2. `source-file.js` - The source file to transform (can be any path, including node_modules)
+
+The transformed code is written to stdout, which you can redirect to a file or pipe to other commands.
+
+### CLI Example
+
+Create a transformer configuration file:
+
+```javascript
+// my-transformer.js
+module.exports = [{
+  channelName: 'my-fetch-channel',
+  module: {
+    name: 'my-module',
+    versionRange: '>=1.0.0',
+    filePath: 'index.js'
+  },
+  functionQuery: {
+    functionName: 'fetch',
+    kind: 'Async'
+  }
+}]
+```
+
+Apply the transformation:
+
+```bash
+npx @apm-js-collab/code-transformer my-transformer.js lib/index.js > instrumented.js
+```
+
+The transformer configuration file can also export an object with additional options:
+
+```javascript
+module.exports = {
+  configs: [/* array of configs */],
+  dcModule: './custom-diagnostics-channel.js', // optional custom dc module
+  customTransforms: {  // optional custom transform functions
+    myCustomTransform: (state, node) => {
+      // custom AST transformation logic
+    }
+  }
+}
+```
+
 ## License
 
 See LICENSE
