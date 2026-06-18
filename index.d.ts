@@ -123,5 +123,5 @@ export class Transformer {
    * # Errors
    * Returns an error if the transformation fails to find injection points.
    */
-  transform(code: string | Buffer, moduleType: ModuleType, sourcemap?: string | null): TransformOutput;
+  transform(code: string | Buffer, moduleType: ModuleType, sourcemap?: string | object | null): TransformOutput;
 }

@@ -516,6 +516,23 @@ describe('source_map', () => {
     assert.equal(original.line, originalReturnLine)
     assert.equal(original.column, originalReturnColumn)
   })
+
+  test('produces a valid sourcemap when an inputSourceMap is provided', () => {
+    const code = 'export class Undici { async fetch (url) { return 42; } }'
+    const inputSourceMap = { version: 3, sources: ['input.js'], mappings: 'AAAA', names: [] }
+
+    const instrumentor = create([
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+    const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
+    const { map } = transformer.transform(code, 'esm', inputSourceMap)
+
+    assert.equal(JSON.parse(map).file, `${TEST_MODULE_NAME}/${TEST_MODULE_PATH}`)
+  })
 })
 
 describe('wrap_promise_non_promise', () => {
