@@ -433,6 +433,35 @@ describe('mutable_result_async_cjs', () => {
   })
 })
 
+describe('ast_query_returned_arrow_cjs', () => {
+  test('instruments an anonymous arrow returned by a factory via astQuery', () => {
+    runTest('ast_query_returned_arrow_cjs', [
+      {
+        channelName: 'decorator_apply',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        astQuery: 'FunctionDeclaration[id.name="Decorator"] ReturnStatement > ArrowFunctionExpression',
+        functionQuery: { kind: 'Sync' },
+      },
+    ])
+  })
+
+  test('reports the astQuery selector when no injection points are found', () => {
+    const instrumentor = create([
+      {
+        channelName: 'no_match',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        astQuery: 'FunctionDeclaration[id.name="doesNotExist"]',
+        functionQuery: { kind: 'Sync' },
+      },
+    ])
+    const transformer = instrumentor.getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
+    assert.throws(
+      () => transformer.transform('function fetch () { return 42 }', 'cjs'),
+      /doesNotExist/
+    )
+  })
+})
+
 describe('polyfill_cjs', () => {
   test('instruments with a custom dc module (cjs)', () => {
     runTest('polyfill_cjs', [
