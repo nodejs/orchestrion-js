@@ -394,6 +394,45 @@ describe('ast_query_cjs', () => {
   })
 })
 
+describe('mutable_result_cjs', () => {
+  test('lets a subscriber substitute the synchronous return value via message.result', () => {
+    runTest('mutable_result_cjs', [
+      {
+        channelName: 'create_mutable',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'create', kind: 'Sync' },
+      },
+      {
+        channelName: 'compute_mutable',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'compute', kind: 'Sync' },
+      },
+      {
+        channelName: 'boom_mutable',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'boom', kind: 'Sync' },
+      },
+    ])
+  })
+})
+
+describe('mutable_result_async_cjs', () => {
+  test('lets a subscriber substitute a native Promise result, but not a thenable result', () => {
+    runTest('mutable_result_async_cjs', [
+      {
+        channelName: 'load_mutable',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'load', kind: 'Async' },
+      },
+      {
+        channelName: 'load_thenable_mutable',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'loadThenable', kind: 'Async' },
+      },
+    ])
+  })
+})
+
 describe('polyfill_cjs', () => {
   test('instruments with a custom dc module (cjs)', () => {
     runTest('polyfill_cjs', [

@@ -87,6 +87,80 @@ const instrumentation = {
 
 This also works for class exports (e.g., `export { MyClass as PublicClass }`).
 
+### Mutating the Return Value
+
+A subscriber can both observe or mutate a function's return value
+via `message.result`. Reassigning `message.result` is useful when
+a function returns another function (or object) that you need to
+wrap, like a factory that returns a per-request handler.
+
+For **synchronous** functions, reassign `message.result` in the
+`end` handler:
+
+```js
+const instrumentation = {
+    channelName: "create-handler",
+    module: { name: "my-framework", versionRange: ">=1.0.0", filePath: "lib/router.js" },
+    functionQuery: { methodName: "create", kind: "Sync" },
+};
+```
+
+```js
+const { tracingChannel } = require("node:diagnostics_channel");
+
+tracingChannel("orchestrion:my-framework:create-handler").subscribe({
+    end(message) {
+        const original = message.result;
+        // Replace the returned handler with a wrapped version.
+        message.result = function wrapped(...args) {
+            // ...start a span, etc.
+            return original.apply(this, args);
+        };
+    },
+});
+```
+
+For **asynchronous** functions, reassign `message.result` in the
+`asyncEnd` handler to substitute the value the returned promise
+resolves to — for example, to wrap a function the promise resolves
+to:
+
+```js
+const instrumentation = {
+    channelName: "load-handler",
+    module: { name: "my-framework", versionRange: ">=1.0.0", filePath: "lib/router.js" },
+    functionQuery: { methodName: "load", kind: "Async" },
+};
+```
+
+```js
+tracingChannel("orchestrion:my-framework:load-handler").subscribe({
+    asyncEnd(message) {
+        const original = message.result;
+        message.result = function wrapped(...args) {
+            // ...start a span, etc.
+            return original.apply(this, args);
+        };
+    },
+});
+```
+
+> [!INFO]
+>
+> Mutating the resolved value of an async function only works
+> when it returns a native `Promise` (`value instanceof
+> Promise`). Promise subclasses and other userland thenables are
+> side-chained and returned to the caller unchanged so that their
+> subclass-specific methods (e.g. `APIPromise.withResponse()`)
+> remain accessible; their resolved value therefore **cannot** be
+> mutated, and reassigning `message.result` for them has no
+> effect.
+
+On the throw path the original error still propagates; the
+substituted return value only applies when the function returns (or
+resolves) normally. If no subscriber reassigns `message.result`, the
+original return value is preserved unchanged.
+
 ### API Reference
 
 ```ts
