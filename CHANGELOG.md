@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.16.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.15.0...code-transformer-v0.16.0) (2026-07-01)
+
+
+### Features
+
+* allow message.result to be changed ([#85](https://github.com/nodejs/orchestrion-js/issues/85)) ([4dddd05](https://github.com/nodejs/orchestrion-js/commit/4dddd05f30de93ca89ed53bd8147a747b6fd4fcf))
+
+
+### Bug Fixes
+
+* Nitro/vercel issue ([#84](https://github.com/nodejs/orchestrion-js/issues/84)) ([74bf35c](https://github.com/nodejs/orchestrion-js/commit/74bf35cac4d271af60fb4903097ea67b0703419b))
+
 ## [0.15.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.14.0...code-transformer-v0.15.0) (2026-06-18)
 
 
