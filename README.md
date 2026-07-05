@@ -197,9 +197,15 @@ type FunctionQuery =
 
 ```ts
 type ModuleMatcher = {
-    name: string; // Module name
-    versionRange: string; // Matching semver range
-    filePath: string; // Relative Unix-style path to the file from the module root (e.g. "lib/index.js")
+    /** Module name */
+    name: string; 
+    /** Matching semver range */
+    versionRange: string;
+    /** 
+     * Relative Unix-style path to the file from the module root (e.g. "lib/index.js") 
+     * Or a regular expression to test against the Unix-style path.
+     */
+    filePath: string | RegExp;
 };
 ```
 
