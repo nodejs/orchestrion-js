@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.16.0...code-transformer-v0.17.0) (2026-07-05)
+
+
+### Features
+
+* Support matching Regex `filepath` ([#73](https://github.com/nodejs/orchestrion-js/issues/73)) ([db68ff1](https://github.com/nodejs/orchestrion-js/commit/db68ff120b7e9dbe9ba63f06d3ce3da71c1870ba))
+
 ## [0.16.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.15.0...code-transformer-v0.16.0) (2026-07-01)
 
 

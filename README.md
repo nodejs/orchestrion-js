@@ -173,8 +173,8 @@ per-request handler), you can set `astQuery` to a raw
 When present, `astQuery` chooses the nodes to instrument and
 takes precedence over `functionQuery`'s matching fields;
 `functionQuery` then only supplies behaviour (`kind`, `index`,
-`callbackIndex`, `mutableResult`) and may be omitted (it defaults
-to `kind: "Sync"`).
+`callbackIndex`) and may be omitted (it defaults to `kind:
+"Sync"`).
 
 For example, to instrument the decorator returned by a factory:
 
@@ -243,9 +243,15 @@ type FunctionQuery =
 
 ```ts
 type ModuleMatcher = {
-    name: string; // Module name
-    versionRange: string; // Matching semver range
-    filePath: string; // Relative Unix-style path to the file from the module root (e.g. "lib/index.js")
+    /** Module name */
+    name: string; 
+    /** Matching semver range */
+    versionRange: string;
+    /** 
+     * Relative Unix-style path to the file from the module root (e.g. "lib/index.js") 
+     * Or a regular expression to test against the Unix-style path.
+     */
+    filePath: string | RegExp;
 };
 ```
 
@@ -257,7 +263,6 @@ type FunctionBehavior = {
     kind?: FunctionKind;
     index?: number | null;
     callbackIndex?: number;
-    mutableResult?: boolean;
 };
 
 type InstrumentationConfig =
