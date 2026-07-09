@@ -36,27 +36,57 @@ export type FunctionQuery = { className: string; methodName: string; kind: Funct
 export type CustomTransform = (state: unknown, node: Node, parent: Node, ancestry: Node[]) => void;
 
 /**
- * Configuration for injecting instrumentation code
+ * The behaviour-only fields of a `FunctionQuery`. Used together with `astQuery`,
+ * where the raw selector chooses the node and these fields drive how it is
+ * wrapped (the name-based matching fields are ignored).
  */
-export interface InstrumentationConfig {
-    /**
-     * The name of the diagnostics channel to publish to
-     */
-    channelName: string;
-    /**
-     * The module matcher to identify the module and file to instrument
-     */
-    module: ModuleMatcher;
-    /**
-     * The function query to identify the function to instrument
-     */
-    functionQuery: FunctionQuery;
-    /**
-     * The name of a custom transform registered via `addTransform`.
-     * When set, takes precedence over `functionQuery.kind`.
-     */
-    transform?: string;
+export interface FunctionBehavior {
+    kind?: FunctionKind;
+    index?: number | null;
+    callbackIndex?: number;
+    mutableResult?: boolean;
 }
+
+/**
+ * Configuration for injecting instrumentation code.
+ *
+ * Either `functionQuery` (name-based matching) or `astQuery` (a raw esquery
+ * selector) must identify the node(s) to instrument. When `astQuery` is set it
+ * takes precedence over `functionQuery`'s matching fields, and `functionQuery`
+ * becomes an optional bag of behaviour options ({@link FunctionBehavior}).
+ */
+export type InstrumentationConfig =
+    | {
+        /** The name of the diagnostics channel to publish to */
+        channelName: string;
+        /** The module matcher to identify the module and file to instrument */
+        module: ModuleMatcher;
+        /** The function query to identify the function to instrument */
+        functionQuery: FunctionQuery;
+        /**
+         * A raw esquery selector that chooses the node(s) to instrument. When
+         * set, it takes precedence over `functionQuery`'s matching fields.
+         */
+        astQuery?: string;
+        /**
+         * The name of a custom transform registered via `addTransform`.
+         * When set, takes precedence over `functionQuery.kind`.
+         */
+        transform?: string;
+    }
+    | {
+        channelName: string;
+        module: ModuleMatcher;
+        /**
+         * A raw esquery selector that chooses the node(s) to instrument. This is
+         * the escape hatch for shapes the name-based `functionQuery` can't
+         * express, e.g. an anonymous arrow returned by a factory function.
+         */
+        astQuery: string;
+        /** Behaviour options for the matched node(s); matching fields are ignored. */
+        functionQuery?: FunctionBehavior;
+        transform?: string;
+    };
 
 /**
  * Describes the module and file path you would like to match

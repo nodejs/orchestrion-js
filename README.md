@@ -161,6 +161,52 @@ substituted return value only applies when the function returns (or
 resolves) normally. If no subscriber reassigns `message.result`, the
 original return value is preserved unchanged.
 
+### AST Query
+
+The name-based `FunctionQuery` variants cover the common cases
+(named functions, class/object methods, expressions). When you
+need to target a node they can't express, such as an **anonymous
+function returned by a factory** (a decorator factory, a
+per-request handler), you can set `astQuery` to a raw
+[esquery](https://github.com/estools/esquery) selector instead.
+
+When present, `astQuery` chooses the nodes to instrument and
+takes precedence over `functionQuery`'s matching fields;
+`functionQuery` then only supplies behaviour (`kind`, `index`,
+`callbackIndex`) and may be omitted (it defaults to `kind:
+"Sync"`).
+
+For example, to instrument the decorator returned by a factory:
+
+```js
+function Injectable(options) {
+    return (target) => { /* applied to the decorated class */ };
+}
+```
+
+```js
+const instrumentation = {
+    channelName: "injectable-apply",
+    module: { name: "@nestjs/common", versionRange: ">=8.0.0", filePath: "decorators/core/injectable.decorator.js" },
+    // Match the arrow returned from `Injectable`. There is no name to target!
+    astQuery: 'FunctionDeclaration[id.name="Injectable"] ReturnStatement > ArrowFunctionExpression',
+    functionQuery: { kind: "Sync" },
+};
+```
+
+The channel then fires each time the decorator is applied, with
+the decorated target available as `message.arguments[0]`, which a
+subscriber can mutate, for example to wrap prototype methods.
+
+An `astQuery` is used verbatim, so it can match any node,
+including ones the name-based variants don't expose, such as
+anonymous or deeply nested functions. (Both name-based and
+`astQuery` matching work on synchronous and async functions
+alike.)
+
+If an `astQuery` matches no nodes, the "failed to find injection
+points" error includes the selector so it can be debugged.
+
 ### API Reference
 
 ```ts
@@ -212,11 +258,28 @@ type ModuleMatcher = {
 #### **`InstrumentationConfig`**
 
 ```ts
-type InstrumentationConfig = {
-    channelName: string; // Name of the diagnostics channel
-    module: ModuleMatcher;
-    functionQuery: FunctionQuery;
+// Behaviour-only fields, used when `astQuery` does the matching.
+type FunctionBehavior = {
+    kind?: FunctionKind;
+    index?: number | null;
+    callbackIndex?: number;
 };
+
+type InstrumentationConfig =
+    | {
+        channelName: string; // Name of the diagnostics channel
+        module: ModuleMatcher;
+        functionQuery: FunctionQuery; // Name-based matching
+        astQuery?: string; // Raw esquery selector; takes precedence over functionQuery matching
+        transform?: string; // Name of a custom transform registered via addTransform
+    }
+    | {
+        channelName: string;
+        module: ModuleMatcher;
+        astQuery: string; // Raw esquery selector chooses the node(s)
+        functionQuery?: FunctionBehavior; // Behaviour only; matching fields ignored
+        transform?: string;
+    };
 ```
 
 ### Functions
