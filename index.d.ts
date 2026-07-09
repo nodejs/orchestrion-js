@@ -52,10 +52,11 @@ export interface InstrumentationConfig {
      */
     functionQuery: FunctionQuery;
     /**
-     * The name of a custom transform registered via `addTransform`.
-     * When set, takes precedence over `functionQuery.kind`.
+     * A custom transform to apply. When a string, it must match the name of a
+     * transform registered via `addTransform`. When a function, it is called
+     * directly. Either form takes precedence over `functionQuery.kind`.
      */
-    transform?: string;
+    transform?: string | CustomTransform;
 }
 
 /**

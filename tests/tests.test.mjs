@@ -470,6 +470,35 @@ describe('polyfill_mjs', () => {
   })
 })
 
+describe('custom_transform_fn_cjs', () => {
+  test('applies a custom transform function passed directly in the config', () => {
+    runTest('custom_transform_fn_cjs', [
+      {
+        channelName: 'fetch_custom',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Sync' },
+        transform (_state, node) {
+          node.body.body.unshift({
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'AssignmentExpression',
+              operator: '=',
+              left: {
+                type: 'MemberExpression',
+                object: { type: 'Identifier', name: 'global' },
+                property: { type: 'Identifier', name: '__customCalled' },
+                computed: false,
+                optional: false,
+              },
+              right: { type: 'Literal', value: true, raw: 'true' },
+            },
+          })
+        },
+      },
+    ])
+  })
+})
+
 describe('custom_transform_cjs', () => {
   test('applies a custom transform registered via addTransform', () => {
     runTest('custom_transform_cjs', [
