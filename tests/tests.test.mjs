@@ -475,6 +475,23 @@ describe('ast_query_returned_arrow_cjs', () => {
   })
 })
 
+describe('sync_name_match_cjs', () => {
+  test('name-based queries match synchronous functions (the [async] token is structural)', () => {
+    runTest('sync_name_match_cjs', [
+      {
+        channelName: 'fetch_expr_sync',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { expressionName: 'fetchExpr', kind: 'Sync' },
+      },
+      {
+        channelName: 'client_query_sync',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { methodName: 'query', kind: 'Sync' },
+      },
+    ])
+  })
+})
+
 describe('polyfill_cjs', () => {
   test('instruments with a custom dc module (cjs)', () => {
     runTest('polyfill_cjs', [
