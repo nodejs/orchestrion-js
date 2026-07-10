@@ -207,6 +207,54 @@ alike.)
 If an `astQuery` matches no nodes, the "failed to find injection
 points" error includes the selector so it can be debugged.
 
+### Custom Transforms
+
+The built-in operators (`traceSync`, `tracePromise`,
+`traceCallback`, `traceAuto`, selected by `functionQuery.kind`)
+cover diagnostics-channel tracing. When you need to rewrite a
+matched node differently, register a custom operator with
+`matcher.addTransform(name, fn)` and reference it from a config's
+`transform` field. When `transform` is set it takes precedence
+over `functionQuery.kind`.
+
+A custom transform receives the same arguments an esquery
+traversal yields, plus the merged instrumentation state, and
+mutates the matched node in place:
+
+```ts
+type CustomTransform = (state, node, parent, ancestry) => void;
+```
+
+- `state` - the config merged with runtime fields
+  (`moduleVersion`, `moduleType`, `operator`, the resolved
+  `functionQuery`, …).
+- `node` - the matched AST node (the function/expression selected
+  by `functionQuery` or `astQuery`).
+- `parent`, `ancestry` - the parent node and full ancestor chain
+  (root last); `ancestry[ancestry.length - 1]` is the `Program`.
+
+A custom transform fully owns how `node` is rewritten. It is not
+required to inject a tracing channel at all.
+
+```js
+const matcher = codeTransformer.create([
+    {
+        channelName: "fetch",
+        module: { name: "my-module", versionRange: ">=1.0.0", filePath: "index.js" },
+        functionQuery: { functionName: "fetch", kind: "Sync" },
+        transform: "myCustomTransform",
+    },
+]);
+
+matcher.addTransform("myCustomTransform", (state, node) => {
+    // Mutate the matched node's AST however you need.
+    node.body.body.unshift(/* an ESTree statement */);
+});
+```
+
+(The CLI accepts the same transforms via the `customTransforms`
+field of a configuration module. See: [CLI Tool](#cli-tool).)
+
 ### API Reference
 
 ```ts
@@ -307,6 +355,19 @@ matching instrumentation configurations.
 - `moduleName` - Name of the module.
 - `version` - Version of the module.
 - `filePath` - Relative Unix-style path to the file from the module root (e.g. `"lib/index.js"`). Windows-style backslash paths are also accepted and will be normalized automatically.
+
+```ts
+addTransform(name: string, fn: CustomTransform): void;
+```
+
+Registers a custom transform operator under `name`, referenced
+from a config's `transform` field. See [Custom
+Transforms](#custom-transforms).
+
+- `name` - Operator name (also used as the config's `transform`
+  value).
+- `fn` - `(state, node, parent, ancestry) => void`; mutates the
+  matched node.
 
 #### **`Transformer`**
 
