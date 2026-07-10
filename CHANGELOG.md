@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.17.0...code-transformer-v0.18.0) (2026-07-10)
+
+
+### Features
+
+* make astQuery a first-class feature ([#86](https://github.com/nodejs/orchestrion-js/issues/86)) ([df093ff](https://github.com/nodejs/orchestrion-js/commit/df093ffcabcf686bf033af42cd7d6ab47890e21e))
+
 ## [0.17.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.16.0...code-transformer-v0.17.0) (2026-07-05)
 
 
