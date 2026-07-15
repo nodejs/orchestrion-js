@@ -89,6 +89,18 @@ describe('class_method_cjs', () => {
   })
 })
 
+describe('static_block_cjs', () => {
+  test('instruments class method when class body has static init blocks', () => {
+    runTest('static_block_cjs', [
+      {
+        channelName: 'Undici:fetch',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' },
+      },
+    ])
+  })
+})
+
 describe('constructor_cjs', () => {
   test('instruments class constructor (cjs)', () => {
     runTest('constructor_cjs', [
