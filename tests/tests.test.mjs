@@ -597,6 +597,39 @@ describe('custom_transform_override_cjs', () => {
   })
 })
 
+describe('custom_transform_defaults_cjs', () => {
+  test('custom transforms can call built-in transforms via state.transforms.defaults', () => {
+    runTest('custom_transform_defaults_cjs', [
+      {
+        channelName: 'fetch_defaults',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Sync' },
+      },
+    ], {
+      customTransforms: {
+        tracingChannelImport (state, node) {
+          state.transforms.defaults.tracingChannelImport(state, node)
+          node.body.unshift({
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'AssignmentExpression',
+              operator: '=',
+              left: {
+                type: 'MemberExpression',
+                object: { type: 'Identifier', name: 'global' },
+                property: { type: 'Identifier', name: '__defaultTransformCalled' },
+                computed: false,
+                optional: false,
+              },
+              right: { type: 'Literal', value: true, raw: 'true' },
+            },
+          })
+        },
+      },
+    })
+  })
+})
+
 describe('buffer_input', () => {
   test('accepts a Buffer and produces the same output as a string', () => {
     const code = [
