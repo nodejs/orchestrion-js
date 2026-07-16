@@ -45,7 +45,7 @@ export type KnownState = InstrumentationConfig & {
     /** The resolved operator name: a built-in (e.g. `'traceSync'`) or a custom transform name */
     operator: string;
     /** The merged transform map (built-ins plus `addTransform` overrides) used for dispatch */
-    transforms: Record<string, CustomTransform>;
+    transforms: Record<string, CustomTransform> & { defaults: Record<string, CustomTransform> };
     /** Counter of function nodes matched so far, used for `index`-based selection */
     functionIndex?: number;
 };
