@@ -252,6 +252,18 @@ matcher.addTransform("myCustomTransform", (state, node) => {
 });
 ```
 
+Registering a name matching a built-in transform (`traceSync`,
+`tracePromise`, `traceCallback`, `traceAuto`,
+`tracingChannelImport`, `tracingChannelDeclaration`) overrides it
+everywhere it is dispatched — including when one built-in invokes
+another internally (e.g. the trace operators calling
+`tracingChannelDeclaration`, which in turn calls
+`tracingChannelImport`). `state.transforms` holds the merged map
+(built-ins plus registered overrides) used for this dispatch; to
+delegate to the original built-in from an override, call it via
+the `@apm-js-collab/code-transformer/lib/transforms` module
+directly.
+
 (The CLI accepts the same transforms via the `customTransforms`
 field of a configuration module. See: [CLI Tool](#cli-tool).)
 
