@@ -30,10 +30,31 @@ export type FunctionKind = "Sync" | "Async" | "Callback" | "Auto";
 export type FunctionQuery = { className: string; methodName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean } | { className: string; privateMethodName: string; kind: FunctionKind; index?: number | null } | { className: string; index?: number | null; isExportAlias?: boolean } | { methodName: string; kind: FunctionKind; index?: number | null } | { functionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean } | { expressionName: string; kind: FunctionKind; index?: number | null; isExportAlias?: boolean };
 
 /**
+ * The merged instrumentation state passed to a transform function: the fields
+ * of the matched {@link InstrumentationConfig} (with `functionQuery`'s export
+ * aliases resolved to local names) plus runtime fields added by the
+ * transformer for the current file.
+ */
+export type KnownState = InstrumentationConfig & {
+    /** The diagnostics_channel module specifier injected into instrumented code */
+    dcModule: string;
+    /** Whether the file being transformed is ESM or CJS */
+    moduleType: ModuleType;
+    /** The version of the module being instrumented */
+    moduleVersion: string;
+    /** The resolved operator name: a built-in (e.g. `'traceSync'`) or a custom transform name */
+    operator: string;
+    /** The merged transform map (built-ins plus `addTransform` overrides) used for dispatch */
+    transforms: Record<string, CustomTransform>;
+    /** Counter of function nodes matched so far, used for `index`-based selection */
+    functionIndex?: number;
+};
+
+/**
  * A custom transform function registered via `addTransform`.
  * Receives the instrumentation state and the matched AST node.
  */
-export type CustomTransform = (state: unknown, node: Node, parent: Node, ancestry: Node[]) => void;
+export type CustomTransform<ExtraState = Record<string, unknown>> = (state: KnownState & ExtraState, node: Node, parent: Node, ancestry: Node[]) => void;
 
 /**
  * The behaviour-only fields of a `FunctionQuery`. Used together with `astQuery`,

@@ -1,4 +1,5 @@
 import { create } from '../lib/index.js'
+import builtinTransforms from '../lib/transforms.js'
 import { describe, test } from 'node:test'
 import assert from 'node:assert'
 import { readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs'
@@ -549,6 +550,41 @@ describe('custom_transform_cjs', () => {
                 type: 'MemberExpression',
                 object: { type: 'Identifier', name: 'global' },
                 property: { type: 'Identifier', name: '__customCalled' },
+                computed: false,
+                optional: false,
+              },
+              right: { type: 'Literal', value: true, raw: 'true' },
+            },
+          })
+        },
+      },
+    })
+  })
+})
+
+describe('custom_transform_override_cjs', () => {
+  test('overrides a built-in transform invoked internally by another transform', () => {
+    runTest('custom_transform_override_cjs', [
+      {
+        channelName: 'fetch_override',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { functionName: 'fetch', kind: 'Sync' },
+      },
+    ], {
+      customTransforms: {
+        // Not referenced by any config's `transform` field: it is only reached
+        // through the built-in traceSync -> tracingChannelDeclaration chain.
+        tracingChannelImport (state, node) {
+          builtinTransforms.tracingChannelImport(state, node)
+          node.body.unshift({
+            type: 'ExpressionStatement',
+            expression: {
+              type: 'AssignmentExpression',
+              operator: '=',
+              left: {
+                type: 'MemberExpression',
+                object: { type: 'Identifier', name: 'global' },
+                property: { type: 'Identifier', name: '__importOverridden' },
                 computed: false,
                 optional: false,
               },
