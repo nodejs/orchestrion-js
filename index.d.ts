@@ -35,7 +35,7 @@ export type FunctionQuery = { className: string; methodName: string; kind: Funct
  * aliases resolved to local names) plus runtime fields added by the
  * transformer for the current file.
  */
-export type TransformState = InstrumentationConfig & {
+export type KnownState = InstrumentationConfig & {
     /** The diagnostics_channel module specifier injected into instrumented code */
     dcModule: string;
     /** Whether the file being transformed is ESM or CJS */
@@ -54,7 +54,7 @@ export type TransformState = InstrumentationConfig & {
  * A custom transform function registered via `addTransform`.
  * Receives the instrumentation state and the matched AST node.
  */
-export type CustomTransform = (state: TransformState, node: Node, parent: Node, ancestry: Node[]) => void;
+export type CustomTransform<ExtraState = Record<string, unknown>> = (state: KnownState & ExtraState, node: Node, parent: Node, ancestry: Node[]) => void;
 
 /**
  * The behaviour-only fields of a `FunctionQuery`. Used together with `astQuery`,
