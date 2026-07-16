@@ -881,4 +881,23 @@ describe('idempotency', () => {
     // Re-applying chanA to the already-chanA-wrapped output is a no-op.
     assert.equal(aba, ab)
   })
+
+  test('runtime-patched instance method: same channel is idempotent, different channel coexists', () => {
+    // Inherited/prototype method (not on the class body) is wrapped at runtime
+    // inside the constructor.
+    const code = 'class Base {}\nBase.prototype.fetch = async function (url) { return 42 }\nclass Sub extends Base {}\nmodule.exports = { Sub }\n'
+    const chan = (name) => [{ channelName: name, module: M, functionQuery: { className: 'Base', methodName: 'fetch', kind: 'Async' } }]
+
+    // Same channel twice is a no-op.
+    const a = transform(code, chan('chanA'))
+    assert.equal(transform(a, chan('chanA')), a)
+
+    // A different channel adds its own patch (both APMs coexist) ...
+    const ab = transform(a, chan('chanB'))
+    assert.ok(ab.includes('tracingChannel("orchestrion:undici:chanA")'))
+    assert.ok(ab.includes('tracingChannel("orchestrion:undici:chanB")'))
+    // ... and each channel is still patched exactly once.
+    assert.equal(ab.split('tr_ch_apm$chanA.start.runStores(').length - 1, 1)
+    assert.equal(ab.split('tr_ch_apm$chanB.start.runStores(').length - 1, 1)
+  })
 })
