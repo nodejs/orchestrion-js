@@ -882,3 +882,91 @@ describe('async_iterator_cjs', () => {
     ])
   })
 })
+
+describe('idempotency', () => {
+  const M = { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH }
+
+  const transform = (code, configs) =>
+    create(configs)
+      .getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
+      .transform(code, 'cjs').code
+
+  const cases = [
+    ['class method (Async)', 'class Undici { async fetch (url) { return 42 } }\nmodule.exports = { Undici }\n',
+      [{ channelName: 'Undici:fetch', module: M, functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' } }]],
+    ['class method (Sync)', 'class Undici { fetch (url) { return 42 } }\nmodule.exports = { Undici }\n',
+      [{ channelName: 'Undici:fetch', module: M, functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Sync' } }]],
+    ['class method (Callback)', 'class Undici { fetch (url, cb) { cb(null, 42) } }\nmodule.exports = { Undici }\n',
+      [{ channelName: 'Undici:fetch', module: M, functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Callback', callbackIndex: 1 } }]],
+    ['function declaration (Async)', 'async function fetch (url) { return 42 }\nmodule.exports = { fetch }\n',
+      [{ channelName: 'fetch', module: M, functionQuery: { functionName: 'fetch', kind: 'Async' } }]],
+    ['function declaration (Sync)', 'function fetch (url) { return 42 }\nmodule.exports = { fetch }\n',
+      [{ channelName: 'fetch', module: M, functionQuery: { functionName: 'fetch', kind: 'Sync' } }]],
+    ['function declaration (Callback)', 'function fetch (url, cb) { cb(null, 42) }\nmodule.exports = { fetch }\n',
+      [{ channelName: 'fetch', module: M, functionQuery: { functionName: 'fetch', kind: 'Callback', callbackIndex: 1 } }]],
+    ['function expression (Async)', 'const fetch = async function fetch (url) { return 42 }\nmodule.exports = { fetch }\n',
+      [{ channelName: 'fetch', module: M, functionQuery: { expressionName: 'fetch', kind: 'Async' } }]],
+    ['instance method via constructor (Async)',
+      'class Base {}\nBase.prototype.fetch = async function (url) { return 42 }\nclass Sub extends Base {}\nmodule.exports = { Sub }\n',
+      [{ channelName: 'Base:fetch', module: M, functionQuery: { className: 'Base', methodName: 'fetch', kind: 'Async' } }]],
+  ]
+
+  const runStoresCount = (code) => code.split('.start.runStores(').length - 1
+
+  for (const [label, code, configs] of cases) {
+    test(`a second pass is a no-op: ${label}`, () => {
+      const once = transform(code, configs)
+      const twice = transform(once, configs)
+      assert.equal(twice, once, 'second pass should not change already-instrumented output')
+      assert.equal(runStoresCount(twice), runStoresCount(once))
+    })
+  }
+
+  test('a second config with a different channel wraps independently without double-publishing to either channel', () => {
+    const code = 'class Undici { async fetch (url) { return 42 } }\nmodule.exports = { Undici }\n'
+    const once = transform(code, [{ channelName: 'chanA', module: M, functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' } }])
+    const twice = transform(once, [{ channelName: 'chanB', module: M, functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' } }])
+
+    // Both APMs coexist (both channels are wrapped) ...
+    assert.equal(runStoresCount(twice), 2)
+    // ... but neither channel is published to more than once, so no channel
+    // double-fires (the actual duplicate-span bug is same-channel only).
+    assert.equal(twice.split('tr_ch_apm$chanA.start.runStores(').length - 1, 1)
+    assert.equal(twice.split('tr_ch_apm$chanB.start.runStores(').length - 1, 1)
+  })
+
+  test('does not re-wrap a channel that is nested under a different channel', () => {
+    const code = 'class Undici { async fetch (url) { return 42 } }\nmodule.exports = { Undici }\n'
+    const chan = (name) => [{ channelName: name, module: M, functionQuery: { className: 'Undici', methodName: 'fetch', kind: 'Async' } }]
+
+    // chanA (innermost) -> chanB wraps over it -> chanA again: the second chanA
+    // must be skipped even though chanA is no longer the outermost wrapper.
+    const a = transform(code, chan('chanA'))
+    const ab = transform(a, chan('chanB'))
+    const aba = transform(ab, chan('chanA'))
+
+    assert.equal(aba.split('tr_ch_apm$chanA.start.runStores(').length - 1, 1)
+    assert.equal(aba.split('tr_ch_apm$chanB.start.runStores(').length - 1, 1)
+    // Re-applying chanA to the already-chanA-wrapped output is a no-op.
+    assert.equal(aba, ab)
+  })
+
+  test('runtime-patched instance method: same channel is idempotent, different channel coexists', () => {
+    // Inherited/prototype method (not on the class body) is wrapped at runtime
+    // inside the constructor.
+    const code = 'class Base {}\nBase.prototype.fetch = async function (url) { return 42 }\nclass Sub extends Base {}\nmodule.exports = { Sub }\n'
+    const chan = (name) => [{ channelName: name, module: M, functionQuery: { className: 'Base', methodName: 'fetch', kind: 'Async' } }]
+
+    // Same channel twice is a no-op.
+    const a = transform(code, chan('chanA'))
+    assert.equal(transform(a, chan('chanA')), a)
+
+    // A different channel adds its own patch (both APMs coexist) ...
+    const ab = transform(a, chan('chanB'))
+    assert.ok(ab.includes('tracingChannel("orchestrion:undici:chanA")'))
+    assert.ok(ab.includes('tracingChannel("orchestrion:undici:chanB")'))
+    // ... and each channel is still patched exactly once.
+    assert.equal(ab.split('tr_ch_apm$chanA.start.runStores(').length - 1, 1)
+    assert.equal(ab.split('tr_ch_apm$chanB.start.runStores(').length - 1, 1)
+  })
+})
