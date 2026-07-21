@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.18.1](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.18.0...code-transformer-v0.18.1) (2026-07-21)
+
+
+### Bug Fixes
+
+* Allow custom transforms to call default transforms ([#99](https://github.com/nodejs/orchestrion-js/issues/99)) ([76b085b](https://github.com/nodejs/orchestrion-js/commit/76b085bd5a6177c98f42d63c6bb46faae6ceee0e))
+* handle nameless blocks in class bodies ([#94](https://github.com/nodejs/orchestrion-js/issues/94)) ([4e787e9](https://github.com/nodejs/orchestrion-js/commit/4e787e942952627e6940566edf29df697a11155c))
+* make internally-invoked built-in transforms overridable ([#97](https://github.com/nodejs/orchestrion-js/issues/97)) ([deec36a](https://github.com/nodejs/orchestrion-js/commit/deec36a86283e498932e987835c59da5896d550f))
+* make the code transform idempotent per channel ([#98](https://github.com/nodejs/orchestrion-js/issues/98)) ([7cdb9ca](https://github.com/nodejs/orchestrion-js/commit/7cdb9ca5faf6fdee96c7761421588a50319710aa))
+
 ## [0.18.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.17.0...code-transformer-v0.18.0) (2026-07-10)
 
 
