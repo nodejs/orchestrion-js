@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.19.0](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.18.1...code-transformer-v0.19.0) (2026-10-04)
+
+
+### Features
+
+* Allow passing custom transforms with instrumentations ([#81](https://github.com/nodejs/orchestrion-js/issues/81)) ([70ea063](https://github.com/nodejs/orchestrion-js/commit/70ea06368e6ee5d50c59c03f40644af6509a4def))
+* Remove unused `free()` methods ([#91](https://github.com/nodejs/orchestrion-js/issues/91)) ([e29c2f9](https://github.com/nodejs/orchestrion-js/commit/e29c2f9c391757ca01fd9b68b78bc2301e27c569))
+
+
+### Bug Fixes
+
+* do not read `this` before `super()` in wrapped constructors ([#101](https://github.com/nodejs/orchestrion-js/issues/101)) ([001b482](https://github.com/nodejs/orchestrion-js/commit/001b482fcd82cb99e4a0ebc62670ce277699a703))
+
 ## [0.18.1](https://github.com/nodejs/orchestrion-js/compare/code-transformer-v0.18.0...code-transformer-v0.18.1) (2026-07-21)
 
 
