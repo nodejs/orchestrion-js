@@ -10,6 +10,20 @@ import { SourceMapConsumer } from 'source-map'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
+// Bun is not an officially supported engine, but people do run this code under
+// it, and its JavaScriptCore engine is stricter than V8 about reading `this` in
+// a derived constructor. Run every fixture under Bun as well when it is
+// installed, so that engine's rules stay covered.
+const hasBun = spawnSync('bun', ['--version'], { stdio: 'ignore' }).status === 0
+
+function runEngine (engine, file, cwd) {
+  const result = spawnSync(engine, [file], { cwd, stdio: 'pipe' })
+  if (result.status !== 0) {
+    const output = (result.stdout?.toString() || '') + (result.stderr?.toString() || '')
+    throw new Error(`${engine} ${file} exited with ${result.status}:\n${output}`)
+  }
+}
+
 const TEST_MODULE_NAME = 'undici'
 const TEST_MODULE_VERSION = '0.0.1'
 const TEST_MODULE_PATH = 'index.mjs'
@@ -41,12 +55,8 @@ function runTest (testName, configs, { mjs = false, filePath = TEST_MODULE_PATH,
     // Injection failure — do not write instrumented file
   }
 
-  const result = spawnSync('node', [`test.${ext}`], { cwd: testDir, stdio: 'pipe' })
-  if (result.status !== 0) {
-    const output = (result.stdout?.toString() || '') + (result.stderr?.toString() || '')
-    throw new Error(`node test.${ext} exited with ${result.status}:\n${output}`)
-  }
-  assert.equal(result.status, 0)
+  runEngine('node', `test.${ext}`, testDir)
+  if (hasBun) runEngine('bun', `test.${ext}`, testDir)
 }
 
 describe('arguments_mutation', () => {
@@ -105,6 +115,30 @@ describe('static_block_cjs', () => {
 describe('constructor_cjs', () => {
   test('instruments class constructor (cjs)', () => {
     runTest('constructor_cjs', [
+      {
+        channelName: 'Undici_constructor',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici' },
+      },
+    ])
+  })
+})
+
+describe('constructor_super_method_cjs', () => {
+  test('keeps super.method() working inside a derived constructor', () => {
+    runTest('constructor_super_method_cjs', [
+      {
+        channelName: 'Undici_constructor',
+        module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
+        functionQuery: { className: 'Undici' },
+      },
+    ])
+  })
+})
+
+describe('constructor_self_cjs', () => {
+  test('reports the instance as message.self and does not mask a throw before super()', () => {
+    runTest('constructor_self_cjs', [
       {
         channelName: 'Undici_constructor',
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
