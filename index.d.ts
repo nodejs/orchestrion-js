@@ -137,7 +137,6 @@ export type ModuleType = "esm" | "cjs" | "unknown";
  */
 export class InstrumentationMatcher {
   private constructor();
-  free(): void;
   /**
    * Get a transformer for the given module name, version and file path.
    * Returns `undefined` if no matching instrumentations are found.
@@ -154,8 +153,6 @@ export class InstrumentationMatcher {
  */
 export class Transformer {
   private constructor();
-  free(): void;
-
   /**
    * The name of the module to transform.
    */
