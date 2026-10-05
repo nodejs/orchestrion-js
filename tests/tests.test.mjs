@@ -7,6 +7,8 @@ import { spawnSync } from 'node:child_process'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SourceMapConsumer } from 'source-map'
+import esquery from 'esquery'
+import { parse } from 'meriyah'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -72,6 +74,19 @@ describe('arguments_mutation', () => {
         module: { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH },
         functionQuery: { functionName: 'fetch_complex', kind: 'Sync' },
       },
+    ])
+  })
+})
+
+describe('arguments_mutation_kinds_cjs', () => {
+  test('in-place argument mutation reaches the original for Sync, Async, Callback and constructors', () => {
+    const M = { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH }
+    runTest('arguments_mutation_kinds_cjs', [
+      { channelName: 'syncFn', module: M, functionQuery: { functionName: 'syncFn', kind: 'Sync' } },
+      { channelName: 'asyncFn', module: M, functionQuery: { functionName: 'asyncFn', kind: 'Async' } },
+      { channelName: 'callbackFn', module: M, functionQuery: { functionName: 'callbackFn', kind: 'Callback', callbackIndex: 1 } },
+      { channelName: 'Base_ctor', module: M, functionQuery: { className: 'Base' } },
+      { channelName: 'Derived_ctor', module: M, functionQuery: { className: 'Derived' } },
     ])
   })
 })
@@ -944,6 +959,98 @@ describe('async_iterator_cjs', () => {
       },
     ])
   })
+})
+
+describe('fast_path_cjs', () => {
+  const M = { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH }
+
+  test('unsubscribed calls skip the per-call transport for every wrapper kind', () => {
+    runTest('fast_path_cjs', [
+      { channelName: 'syncFn', module: M, functionQuery: { functionName: 'syncFn', kind: 'Sync' } },
+      { channelName: 'asyncFn', module: M, functionQuery: { functionName: 'asyncFn', kind: 'Async' } },
+      { channelName: 'callbackFn', module: M, functionQuery: { functionName: 'callbackFn', kind: 'Callback' } },
+      { channelName: 'autoFn', module: M, functionQuery: { functionName: 'autoFn', kind: 'Auto' } },
+      { channelName: 'iterFn', module: M, functionQuery: { functionName: 'iterFn', kind: 'Sync', returnKind: 'Iterator' } },
+      { channelName: 'asyncIterFn', module: M, functionQuery: { functionName: 'asyncIterFn', kind: 'Sync', returnKind: 'AsyncIterator' } },
+      { channelName: 'arrowFn', module: M, functionQuery: { expressionName: 'arrowFn', kind: 'Sync' } },
+      { channelName: 'Service_method', module: M, functionQuery: { className: 'Service', methodName: 'method', kind: 'Sync' } },
+      { channelName: 'Holder_run', module: M, functionQuery: { className: 'Holder', methodName: 'run', kind: 'Sync' } },
+      { channelName: 'Base_ctor', module: M, functionQuery: { className: 'Base' } },
+      { channelName: 'Derived_ctor', module: M, functionQuery: { className: 'Derived' } },
+    ])
+  })
+})
+
+describe('fast path ordering', () => {
+  const M = { name: TEST_MODULE_NAME, versionRange: '>=0.0.1', filePath: TEST_MODULE_PATH }
+
+  const transform = (code, functionQuery) =>
+    create([{ channelName: 'ch', module: M, functionQuery }])
+      .getTransformer(TEST_MODULE_NAME, TEST_MODULE_VERSION, TEST_MODULE_PATH)
+      .transform(code, 'cjs').code
+
+  const declares = (name) => (stmt) =>
+    stmt.type === 'VariableDeclaration' && stmt.declarations.some(d => d.id.name === name)
+  const isTracedCall = (node) =>
+    node?.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === '__apm$traced'
+  const isGuard = (stmt) =>
+    stmt.type === 'IfStatement' &&
+    stmt.test.operator === '!' &&
+    stmt.test.argument.callee?.name === 'tr_ch_apm_hasSubscribers'
+  // `wrapSuper` hoists its `__apm$super` capture above everything else.
+  const isSuperCapture = (stmt) =>
+    declares('__apm$super')(stmt) ||
+    (stmt.type === 'ExpressionStatement' && stmt.expression.left?.object?.name === '__apm$super')
+  // A derived constructor declares the `let` that its `super()` call sites
+  // assign, and the fast path runs those call sites too.
+  const isSelfDeclaration = declares('tr_ch_apm$ch$self')
+
+  const cases = [
+    ['Sync', 'function f (a, b) { return a }', { functionName: 'f', kind: 'Sync' }, 2],
+    ['Async', 'async function f (a) { return a }', { functionName: 'f', kind: 'Async' }, 2],
+    ['Callback', 'function f (a, cb) { cb(null, a) }', { functionName: 'f', kind: 'Callback' }],
+    ['Auto', 'function f (a, cb) { cb(null, a) }', { functionName: 'f', kind: 'Auto' }],
+    ['Iterator', 'function * f (a) { yield a }', { functionName: 'f', kind: 'Sync', returnKind: 'Iterator' }, 2],
+    ['AsyncIterator', 'async function * f (a) { yield a }', { functionName: 'f', kind: 'Async', returnKind: 'AsyncIterator' }, 2],
+    ['arrow expression', 'const f = (a) => a', { expressionName: 'f', kind: 'Sync' }, 2],
+    ['class method', 'class C { m (a) { return a } }', { className: 'C', methodName: 'm', kind: 'Sync' }, 2],
+    ['class method using super', 'class B { m () {} }\nclass C extends B { m (a) { return super.m(a) } }', { className: 'C', methodName: 'm', kind: 'Async' }, 2],
+    ['derived constructor', 'class B {}\nclass C extends B { constructor (a) { super(); this.a = a } }', { className: 'C' }, 2],
+    ['runtime-patched instance method', 'class C {}', { className: 'C', methodName: 'm', kind: 'Async' }, 2],
+  ]
+
+  for (const [label, code, functionQuery, tracedCalls] of cases) {
+    test(`checks for subscribers before building the transport: ${label}`, () => {
+      const ast = parse(transform(code, functionQuery), { next: true })
+      const wrappers = esquery.query(ast, ':function > BlockStatement')
+        .filter(block => block.body.some(declares('__apm$ctx')))
+      assert.equal(wrappers.length, 1)
+
+      const body = wrappers[0].body
+      const guard = body.findIndex(isGuard)
+      assert.ok(guard > 0, 'missing subscriber guard')
+      assert.ok(guard < body.findIndex(declares('__apm$arguments')), 'guard must precede __apm$arguments')
+      assert.ok(guard < body.findIndex(declares('__apm$ctx')), 'guard must precede __apm$ctx')
+      assert.ok(isTracedCall(body[guard].consequent.argument), 'guard must return __apm$traced(...)')
+      for (const stmt of body.slice(0, guard)) {
+        assert.ok(declares('__apm$traced')(stmt) || isSuperCapture(stmt) || isSelfDeclaration(stmt), 'only __apm$traced may precede the guard')
+      }
+
+      if (tracedCalls !== undefined) {
+        const calls = esquery.query(wrappers[0], 'CallExpression[callee.name="__apm$traced"]')
+        assert.equal(calls.length, tracedCalls)
+      }
+
+      if (functionQuery.returnKind) {
+        // `wrapPromise` inlines the patch once per settlement path.
+        const patched = esquery.query(wrappers[0], 'AssignmentExpression[left.object.name="__apm$iter"] > FunctionExpression')
+        assert.ok(patched.length > 0)
+        for (const fn of patched) {
+          assert.ok(isGuard(fn.body.body[0]), 'iterator method must check for subscribers first')
+        }
+      }
+    })
+  }
 })
 
 describe('idempotency', () => {
