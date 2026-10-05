@@ -9,6 +9,13 @@
 // `Array.prototype.slice.call(arguments)` (iterator `next` arguments). Counting
 // those calls while a single wrapped call runs synchronously tells us whether
 // the wrapper took the no-subscriber fast path or built the transport.
+//
+// Replacing the prototype methods is process-wide, so keep the window small:
+// they are only swapped for one synchronous call and always restored, and each
+// fixture runs in its own `node` process. Callers should only assert zero
+// counts on the fast path and a non-zero count on the subscribed path, never
+// exact numbers. The "fast path ordering" test in tests.test.mjs checks the
+// same property on the generated code without patching anything.
 const { slice, at } = Array.prototype
 
 function measure (fn) {
